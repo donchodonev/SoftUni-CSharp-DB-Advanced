@@ -6,7 +6,55 @@ namespace _4._Add_Minion
     internal class Program
     {
         private const string connectionString = "Server=.;Database=MinionsDB;Integrated Security=true";
+        /// <summary>
+        /// Add minion to Minions Table
+        /// </summary>
+        /// <param name="minionName">Minion's name</param>
+        /// <param name="minionAge">Minion's age</param>
+        /// <param name="townName">Minion's town name</param>
+        /// <param name="dbConnection">SQL Connection</param>
+        /// <returns>True if minion is added, false if otherwise</returns>
+        private static bool TryAddMinion(string minionName, int minionAge, string townName, SqlConnection dbConnection)
+        {
+            bool minionIsPresent = true;
 
+            int townId = GetTownId(townName, dbConnection);
+
+            SqlCommand checkMinion =
+                new SqlCommand("SELECT * FROM Minions WHERE Name = @minionName AND TownId = @townId", dbConnection);
+            checkMinion.Parameters.AddWithValue("@minionName", minionName);
+            checkMinion.Parameters.AddWithValue("@townId", townId);
+
+            dbConnection.ConnectionString = connectionString;
+            dbConnection.Open();
+
+            using (dbConnection)
+            {
+                minionIsPresent = checkMinion.ExecuteReader().HasRows;
+            }
+
+            if (minionIsPresent)
+            {
+                return false;
+            }
+
+            SqlCommand insertMinion =
+                new SqlCommand("INSERT INTO Minions (Name,Age,TownId) VALUES(@minionName, @minionAge, @townId)",
+                    dbConnection);
+
+            insertMinion.Parameters.AddWithValue("@minionName", minionName);
+            insertMinion.Parameters.AddWithValue("@minionAge", minionAge);
+            insertMinion.Parameters.AddWithValue("@townId", townId);
+
+            dbConnection.ConnectionString = connectionString;
+            dbConnection.Open();
+            using (dbConnection)
+            {
+                return insertMinion.ExecuteNonQuery() > 0 ? true : false;
+            }
+
+            return true;
+        }
         /// <summary>
         /// Adds a town in the Towns table if not already present
         /// </summary>
@@ -22,6 +70,7 @@ namespace _4._Add_Minion
             sqlCheckTown.Parameters.AddWithValue("@townName", townName);
 
             //check town existance
+            dbCon.ConnectionString = connectionString;
             dbCon.Open();
             using (dbCon)
             {
@@ -33,6 +82,7 @@ namespace _4._Add_Minion
 
             if (townIsMissing)
             {
+                dbCon.ConnectionString = connectionString;
                 dbCon.Open();
                 using (dbCon)
                 {
@@ -95,10 +145,19 @@ namespace _4._Add_Minion
             linkMinionToVillain.Parameters.AddWithValue("@minionId", minionId);
             linkMinionToVillain.Parameters.AddWithValue("@villainId", villainId);
 
+            dbConnection.ConnectionString = connectionString;
             dbConnection.Open();
             using (dbConnection)
             {
-                return linkMinionToVillain.ExecuteNonQuery() > 0 ? true : false;
+                try
+                {
+                    return linkMinionToVillain.ExecuteNonQuery() > 0;
+                }
+                catch (SqlException e)
+                {
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
             }
         }
         /// <summary>
@@ -135,6 +194,7 @@ namespace _4._Add_Minion
                     "SELECT Id FROM Villains WHERE Name = @villainName", dbConnection);
             getVillainId.Parameters.AddWithValue("@villainName", villainName);
 
+            dbConnection.ConnectionString = connectionString;
             dbConnection.Open();
             using (dbConnection)
             {
@@ -149,7 +209,7 @@ namespace _4._Add_Minion
         /// <returns>INT32 Town's id</returns>
         private static int GetTownId(string townName, SqlConnection dbConnection)
         {
-            SqlCommand getTownId = new SqlCommand("SELECT * FROM Towns WHERE Name = @townName",dbConnection);
+            SqlCommand getTownId = new SqlCommand("SELECT * FROM Towns WHERE Name = @townName", dbConnection);
             getTownId.Parameters.AddWithValue("@townName", townName);
 
             dbConnection.Open();
@@ -186,7 +246,16 @@ namespace _4._Add_Minion
             TryAddVillain(villainName, dbCon);
 
             dbCon.ConnectionString = connectionString;
-            Console.WriteLine(GetTownId("Varna", dbCon));
+            TryAddMinion(minionName, age, town, dbCon);
+
+            dbCon.ConnectionString = connectionString;
+            int minionId = GetMinionId(minionName, town, dbCon);
+            int villainId = GetVillainId(villainName, dbCon);
+
+            if (LinkMinionToVillain(minionId, villainId, dbCon))
+            {
+                Console.WriteLine($"Successfully added {minionName} to be minion of {villainName}");
+            }
         }
     }
 }
