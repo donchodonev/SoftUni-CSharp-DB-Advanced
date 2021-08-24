@@ -41,6 +41,8 @@ namespace _4._Add_Minion
                     sqlInsertTown.Parameters.AddWithValue(@"townName", townName);
                     sqlInsertTown.ExecuteNonQuery();
                 }
+
+                Console.WriteLine($"Town {townName} was added to the database.");
             }
         }
 
@@ -76,6 +78,8 @@ namespace _4._Add_Minion
                     sqlInsertVillain.Parameters.AddWithValue("villainName", villainName);
                     sqlInsertVillain.Parameters.AddWithValue("evilnessFactor", 4);
                     sqlInsertVillain.ExecuteNonQuery();
+
+                    Console.WriteLine($"Villain {villainName} was added to the database.");
                 }
             }
         }
@@ -85,7 +89,7 @@ namespace _4._Add_Minion
         /// <param name="minionId">Minion's ID</param>
         /// <param name="villainId">Villain's ID</param>
         /// <param name="dbConnection">SQLConnection</param>
-        private static void LinkMinionToVillain(int minionId, int villainId, SqlConnection dbConnection)
+        private static bool LinkMinionToVillain(int minionId, int villainId, SqlConnection dbConnection)
         {
             SqlCommand linkMinionToVillain = new SqlCommand("INSERT INTO MinionsVillains VALUES(@minionId,@villainId)", dbConnection);
             linkMinionToVillain.Parameters.AddWithValue("@minionId", minionId);
@@ -94,7 +98,7 @@ namespace _4._Add_Minion
             dbConnection.Open();
             using (dbConnection)
             {
-                linkMinionToVillain.ExecuteNonQuery();
+                return linkMinionToVillain.ExecuteNonQuery() > 0 ? true : false;
             }
         }
         /// <summary>
@@ -146,39 +150,7 @@ namespace _4._Add_Minion
             string[] input = Console.ReadLine()
                 .Split();
 
-            //get minion input
-
-            string minionName = input[1];
-            int age = int.Parse(input[2]);
-            string town = input[3];
-
-            //get villain input
-
-            input = Console.ReadLine()
-                .Split();
-            string villainName = input[1];
-
-            //add town if missing
-            TryAddTown(town, dbCon);
-
-            dbCon.ConnectionString = connectionString;
-
-            //add villain if missing
-
-            dbCon.ConnectionString = connectionString;
-            TryAddVillain(villainName, dbCon);
-
-            //get minion id
-            dbCon.ConnectionString = connectionString;
-
-            GetMinionId("Bob", "Burgas", dbCon);
-
-            //get villain id
-            dbCon.ConnectionString = connectionString;
-            GetVillainId("Gru", dbCon);
-
-            dbCon.ConnectionString = connectionString;
-            LinkMinionToVillain(8, 1, dbCon);
+        
         }
     }
 }
