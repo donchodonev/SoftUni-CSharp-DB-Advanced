@@ -141,7 +141,23 @@ namespace _4._Add_Minion
                 return (int)getVillainId.ExecuteScalar();
             }
         }
+        /// <summary>
+        /// Gets town ID from town name
+        /// </summary>
+        /// <param name="townName">Town's name</param>
+        /// <param name="dbConnection">SQLConnection</param>
+        /// <returns>INT32 Town's id</returns>
+        private static int GetTownId(string townName, SqlConnection dbConnection)
+        {
+            SqlCommand getTownId = new SqlCommand("SELECT * FROM Towns WHERE Name = @townName",dbConnection);
+            getTownId.Parameters.AddWithValue("@townName", townName);
 
+            dbConnection.Open();
+            using (dbConnection)
+            {
+                return (int)getTownId.ExecuteScalar();
+            }
+        }
         private static void Main(string[] args)
         {
             //connection setup
@@ -150,7 +166,27 @@ namespace _4._Add_Minion
             string[] input = Console.ReadLine()
                 .Split();
 
-        
+            //get minion input
+
+            string minionName = input[1];
+            int age = int.Parse(input[2]);
+            string town = input[3];
+
+            //get villain input
+
+            input = Console.ReadLine()
+                .Split();
+            string villainName = input[1];
+
+
+            dbCon.ConnectionString = connectionString;
+            TryAddTown(town, dbCon);
+
+            dbCon.ConnectionString = connectionString;
+            TryAddVillain(villainName, dbCon);
+
+            dbCon.ConnectionString = connectionString;
+            Console.WriteLine(GetTownId("Varna", dbCon));
         }
     }
 }
