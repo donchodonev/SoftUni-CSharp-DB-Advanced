@@ -1,9 +1,12 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System;
+using Microsoft.Data.SqlClient;
 
 namespace _4._Add_Minion
 {
     internal class Program
     {
+    private const string connectionString = "Server=.;Database=MinionsDB;Integrated Security=true";
+
         /// <summary>
         /// Adds a town in the Towns table if not already present
         /// </summary>
@@ -86,8 +89,8 @@ namespace _4._Add_Minion
         /// <param name="minionName">Minion's name</param>
         /// <param name="minionTown">Minion's town</param>
         /// <param name="dbConnection">SQLConnection</param>
-        /// <returns>Minion's ID</returns>
-        private static long GetMinionId(string minionName, string minionTown, SqlConnection dbConnection)
+        /// <returns>INT32 Minion's ID</returns>
+        private static int GetMinionId(string minionName, string minionTown, SqlConnection dbConnection)
         {
             SqlCommand getMinionId =
                 new SqlCommand(
@@ -98,41 +101,67 @@ namespace _4._Add_Minion
             dbConnection.Open();
             using (dbConnection)
             {
-                return (long)getMinionId.ExecuteScalar();
+                return (int)getMinionId.ExecuteScalar();
             }
         }
-
-        private static void GetVillainId(string villainName, string villainTown)
+        /// <summary>
+        /// Get villain ID by name
+        /// </summary>
+        /// <param name="villainName">Villain's name</param>
+        /// <param name="dbConnection">SQL Connection</param>
+        /// <returns>Returns INT32 - the villain's ID</returns>
+        private static int GetVillainId(string villainName, SqlConnection dbConnection)
         {
+            SqlCommand getVillainId =
+                new SqlCommand(
+                    "SELECT Id FROM Villains WHERE Name = @villainName", dbConnection);
+            getVillainId.Parameters.AddWithValue("@villainName",villainName);
+
+            dbConnection.Open();
+            using (dbConnection)
+            {
+                return (int) getVillainId.ExecuteScalar();
+            }
         }
 
         private static void Main(string[] args)
         {
             //connection setup
-            string connectionString = "Server=.;Database=MinionsDB;Integrated Security=true";
             var dbCon = new SqlConnection(connectionString);
 
-            /*   string[] input = Console.ReadLine()
-                   .Split();
+            string[] input = Console.ReadLine()
+                .Split();
 
-               //get minion input
-               string minionName = input[1];
-               int age = int.Parse(input[2]);
-               string town = input[3];
+            //get minion input
 
-               //add town if missing
-               TryAddTown(town, dbCon);
+            string minionName = input[1];
+            int age = int.Parse(input[2]);
+            string town = input[3];
 
-               //get villain input
-               input = Console.ReadLine()
-                   .Split();
-               string villainName = input[1];
+            //get villain input
 
-               dbCon.ConnectionString = connectionString;
-               //add villain if missing
-               TryAddVillain(villainName, dbCon);*/
+            input = Console.ReadLine()
+                .Split();
+            string villainName = input[1];
+
+            //add town if missing
+            TryAddTown(town, dbCon);
+
+            dbCon.ConnectionString = connectionString;
+
+            //add villain if missing
+
+            dbCon.ConnectionString = connectionString;
+            TryAddVillain(villainName, dbCon);
+
+            //get minion id
+            dbCon.ConnectionString = connectionString;
+            dbCon.ConnectionString = connectionString;
 
             GetMinionId("Bob", "Burgas", dbCon);
+
+            //get villain id
+            GetVillainId("Gru", dbCon);
         }
     }
 }
