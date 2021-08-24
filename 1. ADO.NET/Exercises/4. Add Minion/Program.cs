@@ -5,7 +5,7 @@ namespace _4._Add_Minion
 {
     internal class Program
     {
-    private const string connectionString = "Server=.;Database=MinionsDB;Integrated Security=true";
+        private const string connectionString = "Server=.;Database=MinionsDB;Integrated Security=true";
 
         /// <summary>
         /// Adds a town in the Towns table if not already present
@@ -79,9 +79,23 @@ namespace _4._Add_Minion
                 }
             }
         }
-
+        /// <summary>
+        /// Link minion to villain via ID
+        /// </summary>
+        /// <param name="minionId">Minion's ID</param>
+        /// <param name="villainId">Villain's ID</param>
+        /// <param name="dbConnection">SQLConnection</param>
         private static void LinkMinionToVillain(int minionId, int villainId, SqlConnection dbConnection)
         {
+            SqlCommand linkMinionToVillain = new SqlCommand("INSERT INTO MinionsVillains VALUES(@minionId,@villainId)", dbConnection);
+            linkMinionToVillain.Parameters.AddWithValue("@minionId", minionId);
+            linkMinionToVillain.Parameters.AddWithValue("@villainId", villainId);
+
+            dbConnection.Open();
+            using (dbConnection)
+            {
+                linkMinionToVillain.ExecuteNonQuery();
+            }
         }
         /// <summary>
         /// Get minion's ID based on minions name and town data
@@ -115,12 +129,12 @@ namespace _4._Add_Minion
             SqlCommand getVillainId =
                 new SqlCommand(
                     "SELECT Id FROM Villains WHERE Name = @villainName", dbConnection);
-            getVillainId.Parameters.AddWithValue("@villainName",villainName);
+            getVillainId.Parameters.AddWithValue("@villainName", villainName);
 
             dbConnection.Open();
             using (dbConnection)
             {
-                return (int) getVillainId.ExecuteScalar();
+                return (int)getVillainId.ExecuteScalar();
             }
         }
 
@@ -156,12 +170,15 @@ namespace _4._Add_Minion
 
             //get minion id
             dbCon.ConnectionString = connectionString;
-            dbCon.ConnectionString = connectionString;
 
             GetMinionId("Bob", "Burgas", dbCon);
 
             //get villain id
+            dbCon.ConnectionString = connectionString;
             GetVillainId("Gru", dbCon);
+
+            dbCon.ConnectionString = connectionString;
+            LinkMinionToVillain(8, 1, dbCon);
         }
     }
 }
