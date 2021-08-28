@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using SoftUni.Data;
 using SoftUni.Models;
 
@@ -205,6 +206,38 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string GetEmployee147(SoftUniContext context)
+        {
+            var employee147 = context
+                .Employees
+                .Where(x => x.EmployeeId == 147)
+                .Select(x => new
+                {
+                    x.FirstName,
+                    x.LastName,
+                    x.JobTitle,
+                    EmployeeProjects = x.EmployeesProjects
+                        .Select(p => new
+                        {
+                            p.Project.Name
+                        })
+                })
+                .First();
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"{employee147.FirstName} {employee147.LastName} - {employee147.JobTitle}");
+
+            foreach (var employeeProject in employee147
+                .EmployeeProjects
+                .OrderBy(x => x.Name))
+            {
+                sb.AppendLine($"{employeeProject.Name}");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
             var dbContext = new SoftUniContext();
@@ -243,11 +276,17 @@ namespace SoftUni
 
             Console.WriteLine(result);
 
-             */
             //8.Address by Town
 
-
             var result = GetAddressesByTown(dbContext);
+
+            Console.WriteLine(result);
+
+             */
+
+            //9.Employee 147
+
+            var result = GetEmployee147(dbContext);
 
             Console.WriteLine(result);
         }
