@@ -84,14 +84,48 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string AddNewAddressToEmployee(SoftUniContext context)
+        {
+            var address = new Address()
+            {
+                AddressText = "Vitoshka 15",
+                TownId = 4
+            };
+
+            context.Employees.First(x => x.LastName == "Nakov").Address = address;
+
+            context.SaveChanges();
+
+            var employees = context
+                .Employees
+                .Select(x => new
+                {
+                    x.Address.AddressId,
+                    x.Address.AddressText
+                })
+                .OrderByDescending(x => x.AddressId)
+                .Take(10)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var employee in employees)
+            {
+                sb.AppendLine($"{employee.AddressText}");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
+
+            /*
+            var dbContext = new SoftUniContext();
+
             //2.Database First exercise
 
             //3.Employees Full Information
-
-            /*
-            var softUniDbContext = new SoftUniContext();
 
             var result = GetEmployeesFullInformation(softUniDbContext);
 
@@ -99,24 +133,21 @@ namespace SoftUni
 
             //4.Employees with Salary Over 50 000 in
 
-            var dbContext = new SoftUniContext();
-
             var result = GetEmployeesWithSalaryOver50000(dbContext);
 
             Console.WriteLine(result);
 
             //5.Employees from Research and Development
 
-            var dbContext = new SoftUniContext();
-
             var result = GetEmployeesFromResearchAndDevelopment(dbContext);
 
+            Console.WriteLine(result);
+
+            //6.Adding a New Address and Updating Employee
+
+            var result = AddNewAddressToEmployee(dbContext);
+
             Console.WriteLine(result);*/
-
-
-
-
-
         }
     }
 }
