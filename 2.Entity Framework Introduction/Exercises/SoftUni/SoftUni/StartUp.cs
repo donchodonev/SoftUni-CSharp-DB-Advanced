@@ -299,69 +299,87 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string IncreaseSalaries(SoftUniContext context)
+        {
+            string[] departmentsGettingSalaryIncreased = new string[]
+            {
+                "Engineering",
+                "Tool Design",
+                "Marketing",
+                "Information Services"
+            };
+
+            var employeesWithIncreasedSalary = context
+                .Employees
+                .Where(x => departmentsGettingSalaryIncreased.Contains(x.Department.Name))
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+
+            foreach (var employee in employeesWithIncreasedSalary)
+            {
+                employee.Salary *= 1.12m;
+            }
+
+            context.SaveChanges();
+
+            foreach (var employee in employeesWithIncreasedSalary)
+            {
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} (${employee.Salary:F2})");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
             var dbContext = new SoftUniContext();
+            string result = string.Empty;
 
-            /*
-
-            //2.Database First exercise
+            //2.Database First exercise - n/a
 
             //3.Employees Full Information
 
-            var result = GetEmployeesFullInformation(softUniDbContext);
-
-            Console.WriteLine(result);
+            //result = GetEmployeesFullInformation(dbContext);
 
             //4.Employees with Salary Over 50 000 in
 
-            var result = GetEmployeesWithSalaryOver50000(dbContext);
-
-            Console.WriteLine(result);
+            //result = GetEmployeesWithSalaryOver50000(dbContext);
 
             //5.Employees from Research and Development
 
-            var result = GetEmployeesFromResearchAndDevelopment(dbContext);
-
-            Console.WriteLine(result);
+            //result = GetEmployeesFromResearchAndDevelopment(dbContext);
 
             //6.Adding a New Address and Updating Employee
 
-            var result = AddNewAddressToEmployee(dbContext);
-
-            Console.WriteLine(result);
+            //result = AddNewAddressToEmployee(dbContext);
 
             //7.Employees and Projects
 
-            var result = GetEmployeesInPeriod(dbContext);
-
-            Console.WriteLine(result);
+            //result = GetEmployeesInPeriod(dbContext);
 
             //8.Address by Town
 
-            var result = GetAddressesByTown(dbContext);
-
-            Console.WriteLine(result);
-
+            //result = GetAddressesByTown(dbContext);
 
             //9.Employee 147
 
-            var result = GetEmployee147(dbContext);
-
-            Console.WriteLine(result);
-
+            //result = GetEmployee147(dbContext);
 
             //10.Departments with More Than 5 Employees
 
-            var result = GetDepartmentsWithMoreThan5Employees(dbContext);
-
-            Console.WriteLine(result);
-
-             */
+            //result = GetDepartmentsWithMoreThan5Employees(dbContext);
 
             //11.Find Latest 10 Projects
 
-            var result = GetLatestProjects(dbContext);
+            //result = GetLatestProjects(dbContext);
+
+            //12.Increase Salaries
+
+            result = IncreaseSalaries(dbContext);
 
             Console.WriteLine(result);
         }
