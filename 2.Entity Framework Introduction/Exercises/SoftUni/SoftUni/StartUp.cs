@@ -60,25 +60,63 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string GetEmployeesFromResearchAndDevelopment(SoftUniContext context)
+        {
+            var employees = context.Employees
+                .Select(x => new
+                {
+                    x.FirstName,
+                    x.LastName,
+                    x.Department,
+                    x.Salary
+                })
+                .Where(x => x.Department.Name == "Research and Development")
+                .OrderBy(x => x.Salary)
+                .ThenByDescending(x => x.FirstName);
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var employee in employees)
+            {
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} from {employee.Department.Name} - ${employee.Salary:F2}");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
             //2.Database First exercise
 
             //3.Employees Full Information
 
-            /*var softUniDbContext = new SoftUniContext();
+            /*
+            var softUniDbContext = new SoftUniContext();
 
             var result = GetEmployeesFullInformation(softUniDbContext);
 
-            Console.WriteLine(result);*/
+            Console.WriteLine(result);
 
-            //4.Employees with Salary Over 50 000
+            //4.Employees with Salary Over 50 000 in
 
             var dbContext = new SoftUniContext();
 
             var result = GetEmployeesWithSalaryOver50000(dbContext);
 
             Console.WriteLine(result);
+
+            //5.Employees from Research and Development
+
+            var dbContext = new SoftUniContext();
+
+            var result = GetEmployeesFromResearchAndDevelopment(dbContext);
+
+            Console.WriteLine(result);*/
+
+
+
+
+
         }
     }
 }
