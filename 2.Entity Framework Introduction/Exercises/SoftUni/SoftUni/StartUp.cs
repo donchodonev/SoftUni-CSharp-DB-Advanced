@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using SoftUni.Data;
 using SoftUni.Models;
@@ -78,7 +79,8 @@ namespace SoftUni
 
             foreach (var employee in employees)
             {
-                sb.AppendLine($"{employee.FirstName} {employee.LastName} from {employee.Department.Name} - ${employee.Salary:F2}");
+                sb.AppendLine(
+                    $"{employee.FirstName} {employee.LastName} from {employee.Department.Name} - ${employee.Salary:F2}");
             }
 
             return sb.ToString().TrimEnd();
@@ -117,11 +119,97 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string GetEmployeesInPeriod(SoftUniContext context)
+        {
+            var employees = context
+                .EmployeesProjects
+                .Where(x => x.Project.StartDate.Year >= 2001 && x.Project.StartDate.Year <= 2003)
+                .Select(x => new
+                {
+                    x.Employee.EmployeeId,
+                    x.Employee.FirstName,
+                    x.Employee.LastName,
+                    x.Employee.Manager
+                })
+                .Take(10)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var employee in employees)
+            {
+                var empProjects = context
+                    .EmployeesProjects
+                    .Select(x => new
+                    {
+                        x.EmployeeId,
+                        x.Project
+                    })
+                    .Where(x => x.EmployeeId == employee.EmployeeId)
+                    .ToList();
+
+                sb.AppendLine(
+                    $"{employee.FirstName} {employee.LastName} - Manager: {employee.Manager.FirstName} {employee.Manager.LastName}");
+
+
+                var employeeProjects = context
+                    .EmployeesProjects
+                    .Where(x => x.EmployeeId == employee.EmployeeId);
+
+                foreach (var employeeProject in employeeProjects)
+                {
+                    string projectStartDate = employeeProject.Project.StartDate.ToString("M/d/yyyy h:mm:ss tt");
+                    string projectEndDate;
+
+                    if (employeeProject.Project.EndDate == null)
+                    {
+                        projectEndDate = "not finished";
+                    }
+                    else
+                    {
+                        projectEndDate = employeeProject.Project.EndDate?.ToString("M/d/yyyy h:mm:ss tt");
+                    }
+
+                    sb.AppendLine(
+                        $"--{employeeProject.Project.Name} - {employeeProject.Project.StartDate:M/d/yyyy h:mm:ss tt} - {projectEndDate}");
+                }
+            }
+
+
+            return sb.ToString().TrimEnd();
+        }
+
+        public static string GetAddressesByTown(SoftUniContext context)
+        {
+            var addresses = context
+                .Addresses
+                .Select(x => new
+                {
+                    x.AddressText,
+                    x.Town.Name,
+                    x.Employees.Count
+                })
+                .OrderByDescending(x => x.Count)
+                .ThenBy(x => x.Name)
+                .ThenBy(x => x.AddressText)
+                .Take(10)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var address in addresses)
+            {
+                sb.AppendLine($"{address.AddressText}, {address.Name} - {address.Count} employees");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
+            var dbContext = new SoftUniContext();
 
             /*
-            var dbContext = new SoftUniContext();
 
             //2.Database First exercise
 
@@ -147,7 +235,21 @@ namespace SoftUni
 
             var result = AddNewAddressToEmployee(dbContext);
 
-            Console.WriteLine(result);*/
+            Console.WriteLine(result);
+
+            //7.Employees and Projects
+
+            var result = GetEmployeesInPeriod(dbContext);
+
+            Console.WriteLine(result);
+
+             */
+            //8.Address by Town
+
+
+            var result = GetAddressesByTown(dbContext);
+
+            Console.WriteLine(result);
         }
     }
 }
