@@ -262,12 +262,38 @@ namespace SoftUni
             foreach (var department in departments)
             {
                 sb.AppendLine($"{department.DepName} - {department.ManagerFirstName} {department.ManagerLastName}");
-                
+
 
                 foreach (var employee in department.EmployeesCollection)
                 {
                     sb.AppendLine($"{employee.FirstName} {employee.LastName} - {employee.JobTitle}");
                 }
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
+        public static string GetLatestProjects(SoftUniContext context)
+        {
+            var latestProjects = context
+                .Projects.Select(x => new
+                {
+                    x.StartDate,
+                    x.Description,
+                    x.Name
+                })
+                .OrderByDescending(x => x.StartDate)
+                .Take(10)
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var latestProject in latestProjects)
+            {
+                sb.AppendLine($"{latestProject.Name}");
+                sb.AppendLine($"{latestProject.Description}");
+                sb.AppendLine($"{latestProject.StartDate.ToString("M/d/yyyy h:mm:ss tt")}");
             }
 
             return sb.ToString().TrimEnd();
@@ -324,7 +350,6 @@ namespace SoftUni
 
             Console.WriteLine(result);
 
-             */
 
             //10.Departments with More Than 5 Employees
 
@@ -332,6 +357,13 @@ namespace SoftUni
 
             Console.WriteLine(result);
 
+             */
+
+            //11.Find Latest 10 Projects
+
+            var result = GetLatestProjects(dbContext);
+
+            Console.WriteLine(result);
         }
     }
 }
