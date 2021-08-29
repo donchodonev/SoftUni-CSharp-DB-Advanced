@@ -334,6 +334,32 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string GetEmployeesByFirstNameStartingWithSa(SoftUniContext context)
+        {
+            var employees = context
+                .Employees
+                .Where(x => EF.Functions.Like(x.FirstName,"Sa%"))
+                .Select(x => new
+                {
+                    x.FirstName,
+                    x.LastName,
+                    x.JobTitle,
+                    x.Salary
+                })
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var employee in employees)
+            {
+                sb.AppendLine($"{employee.FirstName} {employee.LastName} - {employee.JobTitle} - (${employee.Salary:F2})");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
             var dbContext = new SoftUniContext();
@@ -379,7 +405,11 @@ namespace SoftUni
 
             //12.Increase Salaries
 
-            result = IncreaseSalaries(dbContext);
+            //result = IncreaseSalaries(dbContext);
+
+            //13.Find Employees by First Name Starting with "Sa"
+
+            result = GetEmployeesByFirstNameStartingWithSa(dbContext);
 
             Console.WriteLine(result);
         }
