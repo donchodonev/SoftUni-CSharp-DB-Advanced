@@ -338,7 +338,7 @@ namespace SoftUni
         {
             var employees = context
                 .Employees
-                .Where(x => EF.Functions.Like(x.FirstName,"Sa%"))
+                .Where(x => EF.Functions.Like(x.FirstName, "Sa%"))
                 .Select(x => new
                 {
                     x.FirstName,
@@ -394,6 +394,52 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string RemoveTown(SoftUniContext context)
+        {
+            //set employee address to NULL
+
+            var employeesFromSeattle = context
+                .Employees
+                .Where(x => x.Address.Town.Name == "Seattle")
+                .ToList();
+
+            foreach (var employee in employeesFromSeattle)
+            {
+                employee.AddressId = null;
+            }
+
+            context.SaveChanges();
+
+            //delete all addresses related to Seattle
+
+            var seattleAddresses = context
+                .Addresses
+                .Where(x => x.Town.Name == "Seattle")
+                .ToList();
+
+            foreach (var seattleAddress in seattleAddresses)
+            {
+                context.Addresses.Remove(seattleAddress);
+            }
+
+            int addressesRemoved = context.SaveChanges();
+
+            //delete Seattle as a town
+
+            var seattleTown = context
+                .Towns
+                .First(x => x.Name == "Seattle");
+
+            context
+                .Towns
+                .Remove(seattleTown);
+
+            context.SaveChanges();
+
+
+            return $"{addressesRemoved} addresses in Seattle were deleted";
+        }
+
         public static void Main(string[] args)
         {
             var dbContext = new SoftUniContext();
@@ -447,7 +493,11 @@ namespace SoftUni
 
             //14.Delete Project by Id
 
-            result = DeleteProjectById(dbContext);
+            //result = DeleteProjectById(dbContext);
+
+            //15.Remove Town
+
+            result = RemoveTown(dbContext);
 
             Console.WriteLine(result);
         }
