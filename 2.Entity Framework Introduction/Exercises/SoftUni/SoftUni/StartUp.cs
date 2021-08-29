@@ -360,6 +360,40 @@ namespace SoftUni
             return sb.ToString().TrimEnd();
         }
 
+        public static string DeleteProjectById(SoftUniContext context)
+        {
+            var projectWithId2 = context
+                .Projects.Find(2);
+
+            var employeeProjectsWithProject2 = context
+                .EmployeesProjects
+                .Where(x => x.ProjectId == 2)
+                .ToList();
+
+            foreach (var empProject in employeeProjectsWithProject2)
+            {
+                context.EmployeesProjects.Remove(empProject);
+            }
+
+            context.Projects.Remove(projectWithId2);
+
+            context.SaveChanges();
+
+            var first10Projects = context
+                .Projects
+                .Take(10)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var contextEmployeesProject in first10Projects)
+            {
+                sb.AppendLine(contextEmployeesProject.Name);
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main(string[] args)
         {
             var dbContext = new SoftUniContext();
@@ -409,7 +443,11 @@ namespace SoftUni
 
             //13.Find Employees by First Name Starting with "Sa"
 
-            result = GetEmployeesByFirstNameStartingWithSa(dbContext);
+            //result = GetEmployeesByFirstNameStartingWithSa(dbContext);
+
+            //14.Delete Project by Id
+
+            result = DeleteProjectById(dbContext);
 
             Console.WriteLine(result);
         }
