@@ -61,13 +61,22 @@ namespace P01_StudentSystem.Data
                 .IsUnicode();
 
             /////////
-            //Course
+            //Resource
             /////////
 
             //Url
 
             modelBuilder.Entity<Resource>()
                 .Property(x => x.Url)
+                .IsUnicode(false);
+
+            /////////
+            //Homework
+            /////////
+         
+            //Content
+            modelBuilder.Entity<Homework>()
+                .Property(x => x.Content)
                 .IsUnicode(false);
         }
     }
