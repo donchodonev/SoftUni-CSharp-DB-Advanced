@@ -24,7 +24,7 @@ namespace P01_StudentSystem.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Integrated Security=true;Database=master");
+                optionsBuilder.UseSqlServer(@"Server=.\SQLEXPRESS;Integrated Security=true;Database=StudentSystem");
             }
 
             base.OnConfiguring(optionsBuilder);
@@ -48,6 +48,22 @@ namespace P01_StudentSystem.Data
             modelBuilder
                 .Entity<Student>().Property(x => x.PhoneNumber)
                 .IsFixedLength();
+
+
+            /////////
+            //Course
+            /////////
+
+            //Name
+
+            modelBuilder.Entity<Course>()
+                .Property(x => x.Name)
+                .IsUnicode();
+
+
+
+
+
         }
     }
 }

@@ -12,9 +12,6 @@ namespace P01_StudentSystem
             var context = new StudentSystemContext();
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
-
-
-
         }
     }
 }
