@@ -26,7 +26,7 @@ namespace P01_StudentSystem.Data.Models
 
         public DateTime RegisteredOn { get; set; }
 
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
 
         public ICollection<StudentCourse> CourseEnrollments { get; set; }
 
