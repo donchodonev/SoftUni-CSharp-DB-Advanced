@@ -30,6 +30,12 @@ namespace P01_StudentSystem.Data
             base.OnConfiguring(optionsBuilder);
         }
 
+        public DbSet<StudentCourse> StudentCourses { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Resource> Resources { get; set; }
+        public DbSet<Homework> Homeworks { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             /////////
@@ -78,6 +84,14 @@ namespace P01_StudentSystem.Data
             modelBuilder.Entity<Homework>()
                 .Property(x => x.Content)
                 .IsUnicode(false);
+
+
+            /////////
+            //StudentCourse
+            /////////
+
+            modelBuilder.Entity<StudentCourse>()
+                .HasKey(x => new { x.CourseId, x.StudentId });
         }
     }
 }
