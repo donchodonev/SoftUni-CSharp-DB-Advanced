@@ -24,8 +24,8 @@ namespace P03_FootballBetting.Data
         public DbSet<Town> Towns { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Player> Players { get; set; }
-        public DbSet<Position> Position { get; set; }
-        public DbSet<PlayerStatistics> PlayerStatistics { get; set; }
+        public DbSet<Position> Positions { get; set; }
+        public DbSet<PlayerStatistic> PlayerStatistics { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Bet> Bets { get; set; }
         public DbSet<User> Users { get; set; }
@@ -42,7 +42,7 @@ namespace P03_FootballBetting.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PlayerStatistics>()
+            modelBuilder.Entity<PlayerStatistic>()
                 .HasKey(x => new { x.PlayerId, x.GameId });
 
             modelBuilder.Entity<Color>()
@@ -57,7 +57,13 @@ namespace P03_FootballBetting.Data
                 .HasForeignKey(x => x.AwayTeamId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<PlayerStatistics>()
+            modelBuilder.Entity<Team>()
+                .HasMany(x => x.AwayGames)
+                .WithOne(x => x.HomeTeam)
+                .HasForeignKey(x => x.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PlayerStatistic>()
                 .HasOne(x => x.Player)
                 .WithMany(x => x.PlayerStatistics)
                 .OnDelete(DeleteBehavior.Restrict);
