@@ -60,10 +60,15 @@ namespace P01_StudentSystem.Data
                 .Property(x => x.Name)
                 .IsUnicode();
 
+            /////////
+            //Course
+            /////////
 
+            //Url
 
-
-
+            modelBuilder.Entity<Resource>()
+                .Property(x => x.Url)
+                .IsUnicode(false);
         }
     }
 }
