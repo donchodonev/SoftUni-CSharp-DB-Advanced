@@ -10,7 +10,9 @@ namespace P01_StudentSystem.Data.Models
     {
         public Course()
         {
-            
+            StudentsEnrolled = new HashSet<StudentCourse>();
+            Resources = new HashSet<Resource>();
+            HomeworkSubmissions = new HashSet<Homework>();
         }
 
         public int CourseId { get; set; }
@@ -25,5 +27,12 @@ namespace P01_StudentSystem.Data.Models
         public DateTime EndDate { get; set; }
 
         public decimal Price { get; set; }
+
+        public ICollection<StudentCourse> StudentsEnrolled { get; set; }
+
+        public ICollection<Resource> Resources { get; set; }
+
+        public ICollection<Homework> HomeworkSubmissions { get; set; }
+
     }
 }
