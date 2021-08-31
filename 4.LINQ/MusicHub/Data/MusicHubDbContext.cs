@@ -33,7 +33,19 @@
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<SongPerformer>()
+                .HasKey(x => new {x.PerformerId,x.SongId});
 
+            builder.Entity<SongPerformer>()
+                .HasOne(x => x.Performer)
+                .WithMany(x => x.SongPerformers)
+                .HasForeignKey(x => x.PerformerId);
+
+
+            builder.Entity<SongPerformer>()
+                .HasOne(x => x.Song)
+                .WithMany(x => x.SongPerformers)
+                .HasForeignKey(x => x.SongId);
         }
     }
 }
