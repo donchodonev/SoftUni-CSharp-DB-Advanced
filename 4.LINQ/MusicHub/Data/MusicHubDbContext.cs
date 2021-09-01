@@ -38,7 +38,7 @@
 
             builder.Entity<SongPerformer>()
                 .HasOne(x => x.Performer)
-                .WithMany(x => x.SongPerformers)
+                .WithMany(x => x.PerformerSongs)
                 .HasForeignKey(x => x.PerformerId);
 
 
