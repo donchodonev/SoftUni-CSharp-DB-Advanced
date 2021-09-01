@@ -54,6 +54,8 @@
                     sb.AppendLine($"---SongName: {song.Name}");
                     sb.AppendLine($"---Price: {song.Price:F2}");
                     sb.AppendLine($"---Writer: {song.Writer.Name}");
+
+                    songCount++;
                 }
 
                 sb.AppendLine($"-AlbumPrice: {album.Price:F2}");
