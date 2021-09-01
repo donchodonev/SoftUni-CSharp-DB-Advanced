@@ -20,7 +20,7 @@ namespace MusicHub.Data.Models
         [NotMapped] 
         public decimal Price => Songs.Sum(x => x.Price);
 
-        public int ProducerId { get; set; }
+        public int? ProducerId { get; set; }
 
         public Producer Producer { get; set; }
 
