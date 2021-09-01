@@ -61,7 +61,7 @@
                 sb.AppendLine($"-AlbumPrice: {album.Price:F2}");
             }
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
 
         public static string ExportSongsAboveDuration(MusicHubDbContext context, int duration)
