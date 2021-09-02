@@ -30,6 +30,24 @@
             return sb.ToString().TrimEnd();
         }
 
+        public static string GetGoldenBooks(BookShopContext context)
+        {
+            var goldenBooks = context
+                .Books
+                .Where(x => x.EditionType == EditionType.Gold && x.Copies < 5000)
+                .OrderBy(x => x.BookId)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var item in goldenBooks)
+            {
+                sb.AppendLine(item.Title);
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -40,13 +58,10 @@
 
             string ageRestriction = Console.ReadLine();
             Console.WriteLine(GetBooksByAgeRestriction(db, ageRestriction));
-            
-             
-             
-             
-             
              
              */
+
+            Console.WriteLine(GetGoldenBooks(db));
         }
     }
 }
