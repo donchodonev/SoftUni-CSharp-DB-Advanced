@@ -51,7 +51,7 @@
         public static string GetBooksByPrice(BookShopContext context)
         {
             var books = context.Books
-                .Where(x => x.Price > 40)
+                .Where(x => x.Price > 40m)
                 .OrderByDescending(x => x.Price)
                 .ToList();
 
@@ -63,6 +63,25 @@
             }
 
             return sb.ToString().TrimEnd();
+        }
+
+        public static string GetBooksNotReleasedIn(BookShopContext context, int year)
+        {
+            DateTime parsedYear = new DateTime(year,1,1);
+
+            var books = context
+                .Books
+                .Where(x => x.ReleaseDate.Value.Year != parsedYear.Year)
+                .OrderBy(x => x.BookId);
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine(book.Title);
+            }
+
+            return sb.ToString();
         }
 
         public static void Main()
@@ -80,9 +99,16 @@
 
             Console.WriteLine(GetGoldenBooks(db));
 
-             */
-
+            //3.Books By Price
+            
             Console.WriteLine(GetBooksByPrice(db));
+
+            //4. Not Released In
+
+            int year = int.Parse(Console.ReadLine());
+
+            Console.WriteLine(GetBooksNotReleasedIn(db, year));
+             */
         }
     }
 }
