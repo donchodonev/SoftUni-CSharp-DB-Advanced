@@ -3,7 +3,10 @@
     using BookShop.Models.Enums;
     using Data;
     using Initializer;
+    using Microsoft.EntityFrameworkCore;
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
 
@@ -67,7 +70,7 @@
 
         public static string GetBooksNotReleasedIn(BookShopContext context, int year)
         {
-            DateTime parsedYear = new DateTime(year,1,1);
+            DateTime parsedYear = new DateTime(year, 1, 1);
 
             var books = context
                 .Books
@@ -79,6 +82,29 @@
             foreach (var book in books)
             {
                 sb.AppendLine(book.Title);
+            }
+
+            return sb.ToString();
+        }
+
+        public static string GetBooksByCategory(BookShopContext context, string input)
+        {
+            List<string> categories = input
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            var books = context
+                .BooksCategories
+                .Where(bc => categories.Contains(bc.Category.Name.ToLower()))
+                .Select(books => books.Book.Title)
+                .OrderBy(title => title)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine(book);
             }
 
             return sb.ToString();
@@ -109,6 +135,12 @@
 
             Console.WriteLine(GetBooksNotReleasedIn(db, year));
              */
+
+            //5. Book Titles by Category
+
+            string input = Console.ReadLine().ToLower();
+
+            Console.WriteLine(GetBooksByCategory(db, input));
         }
     }
 }
