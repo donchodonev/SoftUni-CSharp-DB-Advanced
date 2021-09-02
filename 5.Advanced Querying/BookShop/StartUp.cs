@@ -48,6 +48,23 @@
             return sb.ToString().TrimEnd();
         }
 
+        public static string GetBooksByPrice(BookShopContext context)
+        {
+            var books = context.Books
+                .Where(x => x.Price > 40)
+                .OrderByDescending(x => x.Price)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine($"{book.Title} - ${book.Price}");
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -59,9 +76,13 @@
             string ageRestriction = Console.ReadLine();
             Console.WriteLine(GetBooksByAgeRestriction(db, ageRestriction));
              
-             */
+            //2.Golden Books
 
             Console.WriteLine(GetGoldenBooks(db));
+
+             */
+
+            Console.WriteLine(GetBooksByPrice(db));
         }
     }
 }
