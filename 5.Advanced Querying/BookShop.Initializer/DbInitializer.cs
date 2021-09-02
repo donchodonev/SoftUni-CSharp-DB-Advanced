@@ -10,7 +10,7 @@
     {
         public static void ResetDatabase(BookShopContext context)
         {
-            //context.Database.EnsureDeleted();
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
             Console.WriteLine("BookShop database created successfully.");
