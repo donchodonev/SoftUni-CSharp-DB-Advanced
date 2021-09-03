@@ -274,12 +274,27 @@
             context.SaveChanges();
         }
 
+        public static int RemoveBooks(BookShopContext context)
+        {
+            var booksToRemove = context
+                .Books
+                .Where(x => x.Copies < 4200)
+                .ToHashSet();
+
+            int booksRemoved = booksToRemove.Count;
+
+            context.RemoveRange(booksToRemove);
+
+            context.SaveChanges();
+
+            return booksRemoved;
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
             //DbInitializer.ResetDatabase(db);
 
-            /*
             //1. Age Restriction
 
             string ageRestriction = Console.ReadLine();
@@ -317,8 +332,9 @@
             Console.WriteLine(GetAuthorNamesEndingIn(db, endingCharacter));
 
             //8. Book Search
-            string input = Console.ReadLine();
-            Console.WriteLine(GetBookTitlesContaining(db, input));
+
+            string input2 = Console.ReadLine();
+            Console.WriteLine(GetBookTitlesContaining(db, input2));
 
             //9. Book Search by Author
 
@@ -341,9 +357,16 @@
             Console.WriteLine(GetTotalProfitByCategory(db));
 
             //14. Most Recent Books
+
             Console.WriteLine(GetMostRecentBooks(db));
-             */
+            
+            //15. Increase Prices
+            
             IncreasePrices(db);
+
+            //16. Remove Books
+
+            Console.WriteLine(RemoveBooks(db));
         }
     }
 }
