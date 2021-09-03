@@ -164,7 +164,7 @@
                 .OrderBy(x => x)
                 .ToList();
 
-            return string.Join(Environment.NewLine,books);
+            return string.Join(Environment.NewLine, books);
         }
 
         public static string GetBooksByAuthor(BookShopContext context, string input)
@@ -184,7 +184,18 @@
                 .OrderBy(x => x.BookId)
                 .ToList();
 
-            return string.Join(Environment.NewLine,booksAndAuthors.Select(x => $"{x.Title} ({x.FirstName} {x.LastName})"));
+            return string.Join(Environment.NewLine, booksAndAuthors.Select(x => $"{x.Title} ({x.FirstName} {x.LastName})"));
+        }
+
+        public static int CountBooks(BookShopContext context, int lengthCheck)
+        {
+            var bookTitlesLongerThanCount = context
+                .Books
+                .Select(x => x.Title)
+                .ToList()
+                .Count(x => x.Count() > lengthCheck);
+
+            return bookTitlesLongerThanCount;
         }
 
         public static void Main()
@@ -193,16 +204,16 @@
             //DbInitializer.ResetDatabase(db);
 
             /*
-            //1.Age Restriction
+            //1. Age Restriction
 
             string ageRestriction = Console.ReadLine();
             Console.WriteLine(GetBooksByAgeRestriction(db, ageRestriction));
              
-            //2.Golden Books
+            //2. Golden Books
 
             Console.WriteLine(GetGoldenBooks(db));
 
-            //3.Books By Price
+            //3. Books By Price
             
             Console.WriteLine(GetBooksByPrice(db));
 
@@ -233,11 +244,17 @@
             string input = Console.ReadLine();
             Console.WriteLine(GetBookTitlesContaining(db, input));
 
-             */
+            //9. Book Search by Author
 
             string authorLastName = Console.ReadLine();
 
             Console.WriteLine(GetBooksByAuthor(db,authorLastName));
+
+             */
+
+            int titleLength = int.Parse(Console.ReadLine());
+
+            Console.WriteLine(CountBooks(db, titleLength));
         }
     }
 }
