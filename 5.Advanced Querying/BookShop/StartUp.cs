@@ -198,6 +198,24 @@
             return bookTitlesLongerThanCount;
         }
 
+        public static string CountCopiesByAuthor(BookShopContext context)
+        {
+            var bookCopiesCountAndAuthor =
+                context
+                .Authors
+                .Select(x => new
+                {
+                    x.FirstName,
+                    x.LastName,
+                    x.Books
+                })
+                .OrderByDescending(x => x.Books.Sum(x => x.Copies))
+                .ToList();
+
+
+            return string.Join(Environment.NewLine, bookCopiesCountAndAuthor.Select(x => $"{x.FirstName} {x.LastName} - {x.Books.Sum(x => x.Copies)}"));
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -250,11 +268,16 @@
 
             Console.WriteLine(GetBooksByAuthor(db,authorLastName));
 
-             */
+            10. Count Books
 
             int titleLength = int.Parse(Console.ReadLine());
 
             Console.WriteLine(CountBooks(db, titleLength));
+
+             */
+
+            Console.WriteLine(CountCopiesByAuthor(db));
+
         }
     }
 }
