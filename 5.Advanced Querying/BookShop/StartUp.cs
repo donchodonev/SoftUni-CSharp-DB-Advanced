@@ -155,6 +155,18 @@
             return string.Join(Environment.NewLine, authors.Select(x => $"{x.FirstName} {x.LastName}"));
         }
 
+        public static string GetBookTitlesContaining(BookShopContext context, string input)
+        {
+            var books = context
+                .Books
+                .Select(x => x.Title)
+                .Where(x => x.ToLower().Contains(input.ToLower()))
+                .OrderBy(x => x)
+                .ToList();
+
+            return string.Join(Environment.NewLine,books);
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -198,6 +210,9 @@
             Console.WriteLine(GetAuthorNamesEndingIn(db, endingCharacter));
              */
 
+
+            string input = Console.ReadLine();
+            Console.WriteLine(GetBookTitlesContaining(db, input));
         }
     }
 }
