@@ -263,6 +263,17 @@
             return sb.ToString().TrimEnd();
         }
 
+        public static void IncreasePrices(BookShopContext context)
+        {
+            var booksReleasedBefore2010 = context.Books
+                .Where(x => x.ReleaseDate.Value.Year < 2010)
+                .ToHashSet()
+                .Select(x => x.Price += 5)
+                .ToHashSet();
+
+            context.SaveChanges();
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -315,7 +326,7 @@
 
             Console.WriteLine(GetBooksByAuthor(db,authorLastName));
 
-            10. Count Books
+            //10. Count Books
 
             int titleLength = int.Parse(Console.ReadLine());
 
@@ -329,10 +340,10 @@
 
             Console.WriteLine(GetTotalProfitByCategory(db));
 
-             */
-
+            //14. Most Recent Books
             Console.WriteLine(GetMostRecentBooks(db));
-
+             */
+            IncreasePrices(db);
         }
     }
 }
