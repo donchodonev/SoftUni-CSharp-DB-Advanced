@@ -136,15 +136,9 @@
                 .OrderByDescending(x => x.ReleaseDate.Value.Date)
                 .ToList();
 
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var book in books)
-            {
-                sb.AppendLine($"{book.Title} {book.EditionType} ${book.Price}");
-            }
-
             return string.Join(Environment.NewLine, books.Select(x => $"{x.Title} - {x.EditionType} - ${x.Price:F2}"));
         }
+
 
         public static void Main()
         {
@@ -183,6 +177,8 @@
             Console.WriteLine(GetBooksReleasedBefore(db, date));
 
              */
+
+
         }
     }
 }
