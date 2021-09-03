@@ -167,6 +167,26 @@
             return string.Join(Environment.NewLine,books);
         }
 
+        public static string GetBooksByAuthor(BookShopContext context, string input)
+        {
+            string authorLastNameToLower = input.ToLower();
+
+            var booksAndAuthors = context
+                .Books
+                .Where(x => x.Author.LastName.ToLower().StartsWith(authorLastNameToLower))
+                .Select(x => new
+                {
+                    x.BookId,
+                    x.Title,
+                    x.Author.FirstName,
+                    x.Author.LastName
+                })
+                .OrderBy(x => x.BookId)
+                .ToList();
+
+            return string.Join(Environment.NewLine,booksAndAuthors.Select(x => $"{x.Title} ({x.FirstName} {x.LastName})"));
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -208,11 +228,16 @@
             string endingCharacter = Console.ReadLine();
 
             Console.WriteLine(GetAuthorNamesEndingIn(db, endingCharacter));
-             */
-
-
+            
+            //8. Book Search
             string input = Console.ReadLine();
             Console.WriteLine(GetBookTitlesContaining(db, input));
+
+             */
+
+            string authorLastName = Console.ReadLine();
+
+            Console.WriteLine(GetBooksByAuthor(db,authorLastName));
         }
     }
 }
