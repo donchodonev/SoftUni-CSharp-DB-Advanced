@@ -231,6 +231,38 @@
             return string.Join(Environment.NewLine, profitAndCategory.Select(x => $"{x.CategoryName} ${x.TotalSum:F2}"));
         }
 
+        public static string GetMostRecentBooks(BookShopContext context)
+        {
+            var mostRecentBooksByCategory =
+                context
+                .Categories
+                .OrderBy(x => x.Name)
+                .Select(x => new
+                {
+                    CategoryName = x.Name,
+                    Top3Books = x.CategoryBooks.OrderByDescending(x => x.Book.ReleaseDate).Take(3).Select(x => new
+                    {
+                        ReleaseDateYear = x.Book.ReleaseDate.Value.Year,
+                        BookTitle = x.Book.Title
+                    })
+
+                });
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var category in mostRecentBooksByCategory)
+            {
+                sb.AppendLine($"--{category.CategoryName}");
+
+                foreach (var book in category.Top3Books)
+                {
+                    sb.AppendLine($"{book.BookTitle} ({book.ReleaseDateYear})");
+                }
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -241,13 +273,13 @@
 
             string ageRestriction = Console.ReadLine();
             Console.WriteLine(GetBooksByAgeRestriction(db, ageRestriction));
-             
+
             //2. Golden Books
 
             Console.WriteLine(GetGoldenBooks(db));
 
             //3. Books By Price
-            
+
             Console.WriteLine(GetBooksByPrice(db));
 
             //4. Not Released In
@@ -272,7 +304,7 @@
             string endingCharacter = Console.ReadLine();
 
             Console.WriteLine(GetAuthorNamesEndingIn(db, endingCharacter));
-            
+
             //8. Book Search
             string input = Console.ReadLine();
             Console.WriteLine(GetBookTitlesContaining(db, input));
@@ -293,9 +325,13 @@
 
             Console.WriteLine(CountCopiesByAuthor(db));
 
-             */
+            //13. Profit by Category
 
             Console.WriteLine(GetTotalProfitByCategory(db));
+
+             */
+
+            Console.WriteLine(GetMostRecentBooks(db));
 
         }
     }
