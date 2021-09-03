@@ -110,6 +110,42 @@
             return sb.ToString();
         }
 
+        public static string GetBooksReleasedBefore(BookShopContext context, string date)
+        {
+            int[] dateTimeDataArray = date
+                .Split('-')
+                .Select(int.Parse)
+                .ToArray();
+
+            int day = dateTimeDataArray[0];
+            int month = dateTimeDataArray[1];
+            int year = dateTimeDataArray[2];
+
+            DateTime dateCondition = new DateTime(year, month, day);
+
+            var books = context
+                .Books
+                .Select(x => new
+                {
+                    x.ReleaseDate,
+                    x.EditionType,
+                    x.Title,
+                    x.Price
+                })
+                .Where(x => x.ReleaseDate.Value.Date < dateCondition.Date)
+                .OrderByDescending(x => x.ReleaseDate.Value.Date)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var book in books)
+            {
+                sb.AppendLine($"{book.Title} {book.EditionType} ${book.Price}");
+            }
+
+            return string.Join(Environment.NewLine, books.Select(x => $"{x.Title} - {x.EditionType} - ${x.Price:F2}"));
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -134,13 +170,19 @@
             int year = int.Parse(Console.ReadLine());
 
             Console.WriteLine(GetBooksNotReleasedIn(db, year));
-             */
 
             //5. Book Titles by Category
 
             string input = Console.ReadLine().ToLower();
 
             Console.WriteLine(GetBooksByCategory(db, input));
+
+            //6. Released before date
+
+            string date = Console.ReadLine();
+            Console.WriteLine(GetBooksReleasedBefore(db, date));
+
+             */
         }
     }
 }
