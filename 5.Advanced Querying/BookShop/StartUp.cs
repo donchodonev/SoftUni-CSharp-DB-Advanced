@@ -216,6 +216,26 @@
             return string.Join(Environment.NewLine, bookCopiesCountAndAuthor.Select(x => $"{x.FirstName} {x.LastName} - {x.Books.Sum(x => x.Copies)}"));
         }
 
+        public static string GetTotalProfitByCategory(BookShopContext context)
+        {
+            var profitAndCategory = context.Categories
+                .Select(x => new
+                {
+                    x.CategoryBooks,
+                    x.Name
+                })
+                .Select(y => new {
+                    TotalSum = y.CategoryBooks.Sum(y => y.Book.Copies * y.Book.Price),
+                    CategoryName = y.Name
+                    })
+                .OrderByDescending(x => x.TotalSum)
+                .ThenBy(x => x.CategoryName)
+                .ToList();
+
+
+            return string.Join(Environment.NewLine, profitAndCategory.Select(x => $"{x.CategoryName} ${x.TotalSum:F2}"));
+        }
+
         public static void Main()
         {
             using var db = new BookShopContext();
@@ -274,9 +294,13 @@
 
             Console.WriteLine(CountBooks(db, titleLength));
 
-             */
+            //12. Total Book Copies
 
             Console.WriteLine(CountCopiesByAuthor(db));
+
+             */
+
+            Console.WriteLine(GetTotalProfitByCategory(db));
 
         }
     }
