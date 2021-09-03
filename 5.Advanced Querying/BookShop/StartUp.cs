@@ -138,7 +138,22 @@
 
             return string.Join(Environment.NewLine, books.Select(x => $"{x.Title} - {x.EditionType} - ${x.Price:F2}"));
         }
+        public static string GetAuthorNamesEndingIn(BookShopContext context, string input)
+        {
+            var authors = context
+                .Authors
+                .Select(x => new
+                {
+                    x.FirstName,
+                    x.LastName
+                })
+                .Where(x => x.FirstName.EndsWith(input))
+                .ToList()
+                .OrderBy(x => x.FirstName)
+                .ThenBy(x => x.LastName);
 
+            return string.Join(Environment.NewLine, authors.Select(x => $"{x.FirstName} {x.LastName}"));
+        }
 
         public static void Main()
         {
@@ -176,8 +191,12 @@
             string date = Console.ReadLine();
             Console.WriteLine(GetBooksReleasedBefore(db, date));
 
-             */
+            //7. Author Search
 
+            string endingCharacter = Console.ReadLine();
+
+            Console.WriteLine(GetAuthorNamesEndingIn(db, endingCharacter));
+             */
 
         }
     }
