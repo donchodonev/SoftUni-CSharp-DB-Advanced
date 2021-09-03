@@ -221,17 +221,12 @@
             var profitAndCategory = context.Categories
                 .Select(x => new
                 {
-                    x.CategoryBooks,
-                    x.Name
+                    TotalSum = x.CategoryBooks.Sum(x => x.Book.Price * x.Book.Copies),
+                    CategoryName = x.Name
                 })
-                .Select(y => new {
-                    TotalSum = y.CategoryBooks.Sum(y => y.Book.Copies * y.Book.Price),
-                    CategoryName = y.Name
-                    })
                 .OrderByDescending(x => x.TotalSum)
                 .ThenBy(x => x.CategoryName)
                 .ToList();
-
 
             return string.Join(Environment.NewLine, profitAndCategory.Select(x => $"{x.CategoryName} ${x.TotalSum:F2}"));
         }
