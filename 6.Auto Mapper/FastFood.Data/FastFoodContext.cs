@@ -13,6 +13,7 @@
         public FastFoodContext(DbContextOptions<FastFoodContext> options)
             : base(options)
         {
+            
         }
 
         public DbSet<Category> Categories { get; set; }
@@ -37,6 +38,16 @@
 
             builder.Entity<Item>()
                 .HasAlternateKey(i => i.Name);
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Integrated Security=true;Database=FastFood");
+            }
+
+
+            base.OnConfiguring(optionsBuilder);
         }
     }
 }
