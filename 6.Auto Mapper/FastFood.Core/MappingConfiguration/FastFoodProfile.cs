@@ -3,6 +3,7 @@
     using AutoMapper;
     using FastFood.Core.ViewModels.Categories;
     using FastFood.Core.ViewModels.Employees;
+    using FastFood.Core.ViewModels.Items;
     using FastFood.Core.ViewModels.Orders;
     using FastFood.Models;
     using System.Linq;
@@ -63,12 +64,13 @@
             this.CreateMap<Position, RegisterEmployeeViewModel>()
                 .ForMember(x => x.PositionId, y => y.MapFrom(z => z.Id));
 
-            this.CreateMap<RegisterEmployeeInputModel,Employee>();
+            this.CreateMap<RegisterEmployeeInputModel, Employee>();
 
             this.CreateMap<Employee, EmployeesAllViewModel>()
                 .ForMember(x => x.Position, y => y.MapFrom(z => z.Position.Name));
 
             //Categories
+
 
             this.CreateMap<Category, CreateCategoryInputModel>()
                 .ForMember(x => x.CategoryName, y => y.MapFrom(z => z.Name));
@@ -76,7 +78,17 @@
             this.CreateMap<CreateCategoryInputModel, Category>()
                 .ForMember(x => x.Name, y => y.MapFrom(z => z.CategoryName));
 
-            this.CreateMap<Category, CategoryAllViewModel>();
+            //Items
+
+            this.CreateMap<Category, CreateItemViewModel>()
+                .ForMember(x => x.CategoryId, y => y.MapFrom(z => z.Id));
+
+            this.CreateMap<CreateItemInputModel, Item>();
+
+            this.CreateMap<Item, ItemsAllViewModels>()
+                .ForMember(x => x.Category, y => y.MapFrom(z => z.Category.Name));
+
+            this.CreateMap<ItemsAllViewModels, Item>();
         }
     }
 }
