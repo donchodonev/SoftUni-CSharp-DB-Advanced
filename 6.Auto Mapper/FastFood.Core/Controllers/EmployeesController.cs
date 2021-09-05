@@ -8,6 +8,7 @@
     using ViewModels.Employees;
     using System.Collections.Generic;
     using AutoMapper.QueryableExtensions;
+    using FastFood.Models;
 
     public class EmployeesController : Controller
     {
@@ -35,12 +36,29 @@
         [HttpPost]
         public IActionResult Register(RegisterEmployeeInputModel model)
         {
-            throw new NotImplementedException();
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            var employeeToRegister = this.mapper.Map<Employee>(model);
+
+            this.context.Employees.Add(employeeToRegister);
+
+            this.context.SaveChanges();
+
+            return this.RedirectToAction("All", "Employees");
         }
 
         public IActionResult All()
         {
-            throw new NotImplementedException();
+            var employees = this
+                .context
+                .Employees
+                .ProjectTo<EmployeesAllViewModel>(mapper.ConfigurationProvider)
+                .ToList();
+
+            return this.View(employees);
         }
     }
 }
