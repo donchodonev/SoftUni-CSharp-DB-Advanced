@@ -1,10 +1,13 @@
 ﻿namespace FastFood.Core.Controllers
 {
     using System;
+    using System.Linq;
     using AutoMapper;
     using Data;
     using Microsoft.AspNetCore.Mvc;
     using ViewModels.Employees;
+    using System.Collections.Generic;
+    using AutoMapper.QueryableExtensions;
 
     public class EmployeesController : Controller
     {
@@ -19,7 +22,14 @@
 
         public IActionResult Register()
         {
-            throw new NotImplementedException();
+            var position = this
+                .context.Positions
+                .ProjectTo<RegisterEmployeeViewModel>(mapper.ConfigurationProvider)
+                .ToList();
+            {
+            };
+
+            return this.View(position);
         }
 
         [HttpPost]
