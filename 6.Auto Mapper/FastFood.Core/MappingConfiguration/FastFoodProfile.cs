@@ -78,6 +78,8 @@
             this.CreateMap<CreateCategoryInputModel, Category>()
                 .ForMember(x => x.Name, y => y.MapFrom(z => z.CategoryName));
 
+            this.CreateMap<Category,CategoryAllViewModel>();
+
             //Items
 
             this.CreateMap<Category, CreateItemViewModel>()
