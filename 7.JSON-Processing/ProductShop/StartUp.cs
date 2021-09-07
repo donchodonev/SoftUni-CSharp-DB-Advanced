@@ -73,12 +73,12 @@ namespace ProductShop
             var products = context
                 .Products
                 .Where(x => x.Price >= 500 && x.Price <= 1000)
-                .Select(x => new 
-            {
-                x.Name,
-                x.Price,
-                Seller = x.Seller.FirstName + " " + x.Seller.LastName
-            })
+                .Select(x => new
+                {
+                    x.Name,
+                    x.Price,
+                    Seller = x.Seller.FirstName + " " + x.Seller.LastName
+                })
                 .OrderBy(x => x.Price)
                 .ToArray();
 
@@ -87,7 +87,41 @@ namespace ProductShop
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
-            return JsonConvert.SerializeObject(products,Formatting.Indented,jsonSettings);
+            return JsonConvert.SerializeObject(products, Formatting.Indented, jsonSettings);
+        }
+
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            var sellers = context
+                .Users
+                .Where(x => x.ProductsSold.Any(p => p.BuyerId != null))
+                .Select(x => new
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    SoldProducts = x.ProductsSold.Where(b => b.BuyerId != null)
+                    .Select(y => new
+                    {
+                        Name = y.Name,
+                        Price = y.Price,
+                        BuyerFirstName = y.Buyer.FirstName,
+                        BuyerLastName = y.Buyer.LastName
+                    })
+                })
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .ToArray();
+
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver()
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(sellers, settings);
         }
 
         public static void Main(string[] args)
@@ -120,11 +154,16 @@ namespace ProductShop
 
             Console.WriteLine(ImportCategoryProducts(db, serializedJsonData));
 
-            */
-
             //5. Export Products In Range
 
             Console.WriteLine(GetProductsInRange(db));
+
+            */
+
+            //6. Export Successfully Sold Products
+
+            Console.WriteLine(GetSoldProducts(db));
+
         }
     }
 }
