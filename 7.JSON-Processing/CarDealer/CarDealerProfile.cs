@@ -11,8 +11,14 @@ namespace CarDealer
     {
         public CarDealerProfile()
         {
-            CreateMap<SupplierInput,Supplier>()
+            CreateMap<SupplierInput, Supplier>()
                 .ReverseMap();
+
+            CreateMap<PartInput, Part>()
+                .ForMember(x => x.SupplierId, y => y.MapFrom(z => z.SupplierId));
+
+            CreateMap<Part, PartInput>()
+            .ForMember(x => x.SupplierId, y => y.MapFrom(z => z.SupplierId));
         }
     }
 }

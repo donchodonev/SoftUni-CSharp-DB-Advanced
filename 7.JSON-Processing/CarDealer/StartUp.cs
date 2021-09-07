@@ -23,9 +23,9 @@ namespace CarDealer
         {
             InitializeAutomapper();
 
-            var jsonData = JsonConvert.DeserializeObject<SupplierInput[]>(inputJson);
+            var dtoData = JsonConvert.DeserializeObject<SupplierInput[]>(inputJson);
 
-            Supplier[] suppliers = mapper.Map<Supplier[]>(jsonData);
+            Supplier[] suppliers = mapper.Map<Supplier[]>(dtoData);
 
             context.Suppliers.AddRange(suppliers);
 
@@ -33,15 +33,39 @@ namespace CarDealer
 
             return $"Successfully imported {countOfImportedSuppliers}.";
         }
+
+        public static string ImportParts(CarDealerContext context, string inputJson)
+        {
+            InitializeAutomapper();
+
+            var dtoData = JsonConvert.DeserializeObject<PartInput[]>(inputJson);
+
+            Part[] parts = mapper.Map<Part[]>(dtoData);
+
+            context.Parts.AddRange(parts.Where(x => context.Suppliers.Any(y => y.Id == x.SupplierId)));
+
+            int countOfPartsImported = context.SaveChanges();
+
+            return $"Successfully imported {countOfPartsImported}.";
+        }
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
+
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
 
             //1. Import Suppliers
 
             string supplierJsonData = File.ReadAllText(@".\..\..\..\Datasets\suppliers.json");
 
             Console.WriteLine(ImportSuppliers(db, supplierJsonData));
+
+            //2. Import Parts
+
+            string partsJsonData = File.ReadAllText(@".\..\..\..\Datasets\parts.json");
+
+            Console.WriteLine(ImportParts(db,partsJsonData));
         }
     }
 }
