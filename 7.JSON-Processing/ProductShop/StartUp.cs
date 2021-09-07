@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ProductShop.Data;
@@ -147,7 +148,52 @@ namespace ProductShop
                 Formatting = Formatting.Indented
             };
 
-            return JsonConvert.SerializeObject(categories,settings);
+            return JsonConvert.SerializeObject(categories, settings);
+        }
+
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            var users = context
+                .Users
+                .Include(x => x.ProductsSold)
+                .ToList()
+                .Where(user => user.ProductsSold.Any(ps => ps.BuyerId != null) && user.ProductsSold.Count >= 1)
+                .Select(user => new
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Age = user.Age,
+                    SoldProducts = new
+                    {
+                        Count = user.ProductsSold.Count(x => x.BuyerId != null),
+                        Products = user.ProductsSold.Where(x => x.BuyerId != null).Select(ps => new
+                        {
+                            Name = ps.Name,
+                            Price = ps.Price
+                        })
+                    }
+                })
+                .OrderByDescending(x => x.SoldProducts.Count)
+                .ToArray();
+
+            var resultObject = new
+            {
+                UsersCount = users.Count(),
+                Users = users
+            };
+                
+
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver()
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            return JsonConvert.SerializeObject(resultObject, settings);
         }
 
         public static void Main(string[] args)
@@ -188,11 +234,15 @@ namespace ProductShop
 
             Console.WriteLine(GetSoldProducts(db));
 
-            */
-
             //7. Export Categories by Products Count
 
             Console.WriteLine(GetCategoriesByProductsCount(db));
+
+            */
+
+            //8. Export Users and Products
+
+            Console.WriteLine(GetUsersWithProducts(db));
         }
     }
 }
