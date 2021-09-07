@@ -124,6 +124,32 @@ namespace ProductShop
             return JsonConvert.SerializeObject(sellers, settings);
         }
 
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories = context
+                .Categories
+                .Select(x => new
+                {
+                    Category = x.Name,
+                    ProductsCount = x.CategoryProducts.Count,
+                    AveragePrice = x.CategoryProducts.Average(y => y.Product.Price).ToString("F2"),
+                    TotalRevenue = x.CategoryProducts.Sum(s => s.Product.Price).ToString("F2")
+                })
+                .OrderByDescending(x => x.ProductsCount)
+                .ToArray();
+
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver()
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(categories,settings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
@@ -158,12 +184,15 @@ namespace ProductShop
 
             Console.WriteLine(GetProductsInRange(db));
 
-            */
-
             //6. Export Successfully Sold Products
 
             Console.WriteLine(GetSoldProducts(db));
 
+            */
+
+            //7. Export Categories by Products Count
+
+            Console.WriteLine(GetCategoriesByProductsCount(db));
         }
     }
 }
