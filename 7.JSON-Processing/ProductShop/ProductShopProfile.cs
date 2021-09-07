@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ProductShop.Models;
+using ProductShop.Models.DTO_Models;
 
 namespace ProductShop
 {
@@ -7,6 +8,7 @@ namespace ProductShop
     {
         public ProductShopProfile()
         {
+            CreateMap<CategoryProductDTO, CategoryProduct>();
         }
     }
 }

@@ -7,11 +7,19 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ProductShop.Data;
 using ProductShop.Models;
+using ProductShop.Models.DTO_Models;
 
 namespace ProductShop
 {
     public class StartUp
     {
+        static IMapper mapper;
+        public static void InitializeAutomapper()
+        {
+            var config = new MapperConfiguration(x => x.AddProfile(new ProductShopProfile()));
+            mapper = new Mapper(config);
+        }
+
         public static string ImportUsers(ProductShopContext context, string inputJson)
         {
             User[] users = JsonConvert.DeserializeObject<User[]>(inputJson);
@@ -45,29 +53,53 @@ namespace ProductShop
             return $"Successfully imported {countOfCategoriesImported}";
         }
 
+        public static string ImportCategoryProducts(ProductShopContext context, string inputJson)
+        {
+            InitializeAutomapper();
+
+            var productsCategoriesDTO = JsonConvert.DeserializeObject<IEnumerable<CategoryProductDTO>>(inputJson);
+
+            var categoryProducts = mapper.Map<IEnumerable<CategoryProduct>>(productsCategoriesDTO);
+
+            context.CategoryProducts.AddRange(categoryProducts);
+
+            int countOfCategoryProductsImported = context.SaveChanges();
+
+            return $"Successfully imported {countOfCategoryProductsImported}";
+        }
+
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
 
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+
             /*
-            //1. Import Users
+            1. Import Users
 
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\users.json");
 
             Console.WriteLine(ImportUsers(db,serializedJsonData));
 
-            //2. Import Products
+            2. Import Products
 
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\products.json");
 
             Console.WriteLine(ImportProducts(db,serializedJsonData));
-            */
 
             //3. Import Categories
 
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\categories.json");
 
             Console.WriteLine(ImportCategories(db,serializedJsonData));
+            */
+
+            //4. Import Categories and Products
+
+            string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\categories-products.json");
+
+            Console.WriteLine(ImportCategoryProducts(db, serializedJsonData));
         }
     }
 }
