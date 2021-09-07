@@ -68,14 +68,34 @@ namespace ProductShop
             return $"Successfully imported {countOfCategoryProductsImported}";
         }
 
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            var products = context
+                .Products
+                .Where(x => x.Price >= 500 && x.Price <= 1000)
+                .Select(x => new 
+            {
+                x.Name,
+                x.Price,
+                Seller = x.Seller.FirstName + " " + x.Seller.LastName
+            })
+                .OrderBy(x => x.Price)
+                .ToArray();
+
+            var jsonSettings = new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            return JsonConvert.SerializeObject(products,Formatting.Indented,jsonSettings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
 
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
-
             /*
+
             1. Import Users
 
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\users.json");
@@ -93,13 +113,18 @@ namespace ProductShop
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\categories.json");
 
             Console.WriteLine(ImportCategories(db,serializedJsonData));
-            */
 
             //4. Import Categories and Products
 
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\categories-products.json");
 
             Console.WriteLine(ImportCategoryProducts(db, serializedJsonData));
+
+            */
+
+            //5. Export Products In Range
+
+            Console.WriteLine(GetProductsInRange(db));
         }
     }
 }
