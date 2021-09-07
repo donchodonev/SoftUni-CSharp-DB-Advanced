@@ -23,13 +23,34 @@ namespace ProductShop
             return $"Successfully imported {countOfUsersAdded}";
         }
 
+        public static string ImportProducts(ProductShopContext context, string inputJson)
+        {
+            Product[] products = JsonConvert.DeserializeObject<Product[]>(inputJson);
+
+            context.Products.AddRange(products);
+
+            int countOfProductsSaved = context.SaveChanges();
+
+            return $"Successfully imported {countOfProductsSaved}";
+        }
+
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
 
+            /*
+            //1. Import Users
+
             string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\users.json");
 
-            Console.WriteLine(ImportUsers(db,serializedJsonData));
+            Console.WriteLine(ImportUsers(db,serializedJsonData));*/
+
+            //2. Import Products
+
+            string serializedJsonData = File.ReadAllText(@".\..\..\..\Datasets\products.json");
+
+            Console.WriteLine(ImportProducts(db,serializedJsonData));
+
         }
     }
 }
