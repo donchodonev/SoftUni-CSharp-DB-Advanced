@@ -190,11 +190,11 @@ namespace CarDealer
                 .Cars
                 .Select(car => new
                 {
-                    currentCar = new
+                    car = new
                     {
-                        car.Make,
-                        car.Model,
-                        car.TravelledDistance,
+                        Make = car.Make,
+                        Model = car.Model,
+                        TravelledDistance = car.TravelledDistance,
                     },
 
                     parts = car.PartCars.Select(part => new
@@ -202,7 +202,8 @@ namespace CarDealer
                         Name = part.Part.Name,
                         Price = part.Part.Price.ToString("F2")
                     })
-                });
+                })
+                .ToArray();
 
             var settings = new JsonSerializerSettings()
             {
