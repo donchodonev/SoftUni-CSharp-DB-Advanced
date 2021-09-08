@@ -184,6 +184,35 @@ namespace CarDealer
             return JsonConvert.SerializeObject(suppliers, settings);
         }
 
+        public static string GetCarsWithTheirListOfParts(CarDealerContext context)
+        {
+            var carWithParts = context
+                .Cars
+                .Select(car => new
+                {
+                    currentCar = new
+                    {
+                        car.Make,
+                        car.Model,
+                        car.TravelledDistance,
+                    },
+
+                    parts = car.PartCars.Select(part => new
+                    {
+                        Name = part.Part.Name,
+                        Price = part.Part.Price.ToString("F2")
+                    })
+                });
+
+            var settings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            };
+
+
+            return JsonConvert.SerializeObject(carWithParts, settings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
@@ -230,11 +259,17 @@ namespace CarDealer
 
                         Console.WriteLine(GetCarsFromMakeToyota(db));
 
+                        //8. Export Local Suppliers
+
+                        Console.WriteLine(GetLocalSuppliers(db));
+
             */
 
-            //8. Export Local Suppliers
+            //9. Export Cars With Their List Of Parts
 
-            Console.WriteLine(GetLocalSuppliers(db));
+
+            Console.WriteLine(GetCarsWithTheirListOfParts(db));
+
         }
     }
 }
