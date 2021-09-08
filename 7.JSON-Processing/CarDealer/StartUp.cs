@@ -214,6 +214,33 @@ namespace CarDealer
             return JsonConvert.SerializeObject(carWithParts, settings);
         }
 
+        public static string GetTotalSalesByCustomer(CarDealerContext context)
+        {
+            var customers = context
+                .Customers
+                .Where(c => c.Sales.Count >= 1)
+                .Select(c => new
+            {
+                FullName = c.Name,
+                BoughtCars = c.Sales.Count(),
+                SpentMoney = c.Sales.Select(s => s.Car.PartCars.Sum(x => x.Part.Price)).Sum()
+            })
+                .OrderByDescending(x => x.SpentMoney)
+                .ThenByDescending(x => x.BoughtCars)
+                .ToArray();
+
+            var settings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = new DefaultContractResolver()
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy(),
+                }
+            };
+
+            return JsonConvert.SerializeObject(customers,settings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
@@ -264,12 +291,15 @@ namespace CarDealer
 
                         Console.WriteLine(GetLocalSuppliers(db));
 
+                        //9. Export Cars With Their List Of Parts
+
+                        Console.WriteLine(GetCarsWithTheirListOfParts(db));
+
             */
 
-            //9. Export Cars With Their List Of Parts
+            //10. Export Total Sales By Customer
 
-
-            Console.WriteLine(GetCarsWithTheirListOfParts(db));
+            Console.WriteLine(GetTotalSalesByCustomer(db));
 
         }
     }
