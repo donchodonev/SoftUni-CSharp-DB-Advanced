@@ -136,50 +136,78 @@ namespace CarDealer
                 Formatting = Formatting.Indented
             };
 
-            return JsonConvert.SerializeObject(customersOrdered,settings);
+            return JsonConvert.SerializeObject(customersOrdered, settings);
         }
 
+        public static string GetCarsFromMakeToyota(CarDealerContext context)
+        {
+            var toyotas = context
+                .Cars
+                .Where(car => car.Make == "Toyota")
+                .OrderBy(car => car.Model)
+                .ThenByDescending(car => car.TravelledDistance)
+                .Select(car => new
+                {
+                    car.Id,
+                    car.Make,
+                    car.Model,
+                    car.TravelledDistance
+                })
+                .ToArray();
+
+            var settings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(toyotas, settings);
+        }
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
 
-/*          db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
+            /*          
+                        db.Database.EnsureDeleted();
+                        db.Database.EnsureCreated();
 
-            //1. Import Suppliers
+                        //1. Import Suppliers
 
-            string supplierJsonData = File.ReadAllText(@".\..\..\..\Datasets\suppliers.json");
+                        string supplierJsonData = File.ReadAllText(@".\..\..\..\Datasets\suppliers.json");
 
-            Console.WriteLine(ImportSuppliers(db, supplierJsonData));
+                        Console.WriteLine(ImportSuppliers(db, supplierJsonData));
 
-            //2. Import Parts
+                        //2. Import Parts
 
-            string partsJsonData = File.ReadAllText(@".\..\..\..\Datasets\parts.json");
+                        string partsJsonData = File.ReadAllText(@".\..\..\..\Datasets\parts.json");
 
-            Console.WriteLine(ImportParts(db, partsJsonData));
+                        Console.WriteLine(ImportParts(db, partsJsonData));
 
-            //3. Import Cars
+                        //3. Import Cars
 
-            string carsJsonData = File.ReadAllText(@".\..\..\..\Datasets\cars.json");
+                        string carsJsonData = File.ReadAllText(@".\..\..\..\Datasets\cars.json");
 
-            Console.WriteLine(ImportCars(db, carsJsonData));
+                        Console.WriteLine(ImportCars(db, carsJsonData));
 
-            //4. Import Customers
+                        //4. Import Customers
 
-            string customersJsonData = File.ReadAllText(@".\..\..\..\Datasets\customers.json");
+                        string customersJsonData = File.ReadAllText(@".\..\..\..\Datasets\customers.json");
 
-            Console.WriteLine(ImportCustomers(db, customersJsonData));
+                        Console.WriteLine(ImportCustomers(db, customersJsonData));
 
-            //5. Import Sales
+                        //5. Import Sales
 
-            string salesJsonData = File.ReadAllText(@".\..\..\..\Datasets\sales.json");
+                        string salesJsonData = File.ReadAllText(@".\..\..\..\Datasets\sales.json");
 
-            Console.WriteLine(ImportSales(db,salesJsonData));
-*/
+                        Console.WriteLine(ImportSales(db,salesJsonData));
 
-            //6. Export Ordered Customers
+                        //6. Export Ordered Customers
 
-            Console.WriteLine(GetOrderedCustomers(db));
+                        Console.WriteLine(GetOrderedCustomers(db));
+            */
+
+            //7. Export Cars from Make Toyota
+
+            Console.WriteLine(GetCarsFromMakeToyota(db));
         }
     }
 }
