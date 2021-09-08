@@ -100,12 +100,26 @@ namespace CarDealer
             return $"Successfully imported {countOfCustomersImported}.";
         }
 
+        public static string ImportSales(CarDealerContext context, string inputJson)
+        {
+            InitializeAutomapper();
+
+            var saleDtoData = JsonConvert.DeserializeObject<SalesInputDTO[]>(inputJson);
+
+            Sale[] sales = mapper.Map<Sale[]>(saleDtoData);
+
+            context.Sales.AddRange(sales);
+
+            int countOfSalesImported = context.SaveChanges();
+
+            return $"Successfully imported {countOfSalesImported}.";
+        }
 
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
-
-/*            db.Database.EnsureDeleted();
+/*
+            db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
 
             //1. Import Suppliers
@@ -124,13 +138,19 @@ namespace CarDealer
 
             string carsJsonData = File.ReadAllText(@".\..\..\..\Datasets\cars.json");
 
-            Console.WriteLine(ImportCars(db,carsJsonData));
+            Console.WriteLine(ImportCars(db, carsJsonData));
 
-            //4. Import Customers*/
+            //4. Import Customers
 
             string customersJsonData = File.ReadAllText(@".\..\..\..\Datasets\customers.json");
 
             Console.WriteLine(ImportCustomers(db, customersJsonData));
+
+            //5. Import Sales*/
+
+            string salesJsonData = File.ReadAllText(@".\..\..\..\Datasets\sales.json");
+
+            Console.WriteLine(ImportSales(db,salesJsonData));
         }
     }
 }

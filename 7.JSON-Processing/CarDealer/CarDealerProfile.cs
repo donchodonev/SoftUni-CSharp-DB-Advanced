@@ -20,11 +20,14 @@ namespace CarDealer
             CreateMap<Part, PartInput>()
             .ForMember(x => x.SupplierId, y => y.MapFrom(z => z.SupplierId));
 
-            CreateMap<CarInput,Car>()
+            CreateMap<CarInput, Car>()
                 .ReverseMap();
 
-            CreateMap<CustomerInputDTO,Customer>()
+            CreateMap<CustomerInputDTO, Customer>()
                 .ReverseMap();
+
+            CreateMap<SalesInputDTO, Sale>().
+                ReverseMap();
         }
     }
 }
