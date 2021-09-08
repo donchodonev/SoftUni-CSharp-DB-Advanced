@@ -220,11 +220,11 @@ namespace CarDealer
                 .Customers
                 .Where(c => c.Sales.Count >= 1)
                 .Select(c => new
-            {
-                FullName = c.Name,
-                BoughtCars = c.Sales.Count(),
-                SpentMoney = c.Sales.Select(s => s.Car.PartCars.Sum(x => x.Part.Price)).Sum()
-            })
+                {
+                    FullName = c.Name,
+                    BoughtCars = c.Sales.Count(),
+                    SpentMoney = c.Sales.Select(s => s.Car.PartCars.Sum(x => x.Part.Price)).Sum()
+                })
                 .OrderByDescending(x => x.SpentMoney)
                 .ThenByDescending(x => x.BoughtCars)
                 .ToArray();
@@ -238,12 +238,12 @@ namespace CarDealer
                 }
             };
 
-            return JsonConvert.SerializeObject(customers,settings);
+            return JsonConvert.SerializeObject(customers, settings);
         }
 
         public static string GetSalesWithAppliedDiscount(CarDealerContext context)
         {
-            var carsAndPricing = 
+            var carsAndPricing =
                 context
                 .Sales
                 .Select(c => new
@@ -257,7 +257,7 @@ namespace CarDealer
                     customerName = c.Customer.Name,
                     Discount = c.Discount.ToString("F2"),
                     price = c.Car.PartCars.Sum(x => x.Part.Price).ToString("F2"),
-                    priceWithDiscount = (c.Car.PartCars.Sum(x => x.Part.Price) * ((100.00M -c.Discount) / 100)).ToString("F2")
+                    priceWithDiscount = (c.Car.PartCars.Sum(x => x.Part.Price) * ((100.00M - c.Discount) / 100)).ToString("F2")
                 })
                 .Take(10)
                 .ToArray();
@@ -267,67 +267,65 @@ namespace CarDealer
                 Formatting = Formatting.Indented,
             };
 
-            return JsonConvert.SerializeObject(carsAndPricing,settings);
+            return JsonConvert.SerializeObject(carsAndPricing, settings);
         }
 
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
 
-            /*          
-                        db.Database.EnsureDeleted();
-                        db.Database.EnsureCreated();
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
 
-                        //1. Import Suppliers
+            //1. Import Suppliers
 
-                        string supplierJsonData = File.ReadAllText(@".\..\..\..\Datasets\suppliers.json");
+            string supplierJsonData = File.ReadAllText(@".\..\..\..\Datasets\suppliers.json");
 
-                        Console.WriteLine(ImportSuppliers(db, supplierJsonData));
+            Console.WriteLine(ImportSuppliers(db, supplierJsonData));
 
-                        //2. Import Parts
+            //2. Import Parts
 
-                        string partsJsonData = File.ReadAllText(@".\..\..\..\Datasets\parts.json");
+            string partsJsonData = File.ReadAllText(@".\..\..\..\Datasets\parts.json");
 
-                        Console.WriteLine(ImportParts(db, partsJsonData));
+            Console.WriteLine(ImportParts(db, partsJsonData));
 
-                        //3. Import Cars
+            //3. Import Cars
 
-                        string carsJsonData = File.ReadAllText(@".\..\..\..\Datasets\cars.json");
+            string carsJsonData = File.ReadAllText(@".\..\..\..\Datasets\cars.json");
 
-                        Console.WriteLine(ImportCars(db, carsJsonData));
+            Console.WriteLine(ImportCars(db, carsJsonData));
 
-                        //4. Import Customers
+            //4. Import Customers
 
-                        string customersJsonData = File.ReadAllText(@".\..\..\..\Datasets\customers.json");
+            string customersJsonData = File.ReadAllText(@".\..\..\..\Datasets\customers.json");
 
-                        Console.WriteLine(ImportCustomers(db, customersJsonData));
+            Console.WriteLine(ImportCustomers(db, customersJsonData));
 
-                        //5. Import Sales
+            //5. Import Sales
 
-                        string salesJsonData = File.ReadAllText(@".\..\..\..\Datasets\sales.json");
+            string salesJsonData = File.ReadAllText(@".\..\..\..\Datasets\sales.json");
 
-                        Console.WriteLine(ImportSales(db,salesJsonData));
+            Console.WriteLine(ImportSales(db, salesJsonData));
 
-                        //6. Export Ordered Customers
+            //6. Export Ordered Customers
 
-                        Console.WriteLine(GetOrderedCustomers(db));
+            Console.WriteLine(GetOrderedCustomers(db));
 
-                        //7. Export Cars from Make Toyota
+            //7. Export Cars from Make Toyota
 
-                        Console.WriteLine(GetCarsFromMakeToyota(db));
+            Console.WriteLine(GetCarsFromMakeToyota(db));
 
-                        //8. Export Local Suppliers
+            //8. Export Local Suppliers
 
-                        Console.WriteLine(GetLocalSuppliers(db));
+            Console.WriteLine(GetLocalSuppliers(db));
 
-                        //9. Export Cars With Their List Of Parts
+            //9. Export Cars With Their List Of Parts
 
-                        Console.WriteLine(GetCarsWithTheirListOfParts(db));
+            Console.WriteLine(GetCarsWithTheirListOfParts(db));
 
-                        //10. Export Total Sales By Customer
+            //10. Export Total Sales By Customer
 
-                        Console.WriteLine(GetTotalSalesByCustomer(db));
-            */
+            Console.WriteLine(GetTotalSalesByCustomer(db));
 
             //11. Export Sales With Applied Discount
 
