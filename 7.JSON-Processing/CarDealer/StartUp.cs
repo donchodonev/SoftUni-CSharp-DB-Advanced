@@ -241,6 +241,35 @@ namespace CarDealer
             return JsonConvert.SerializeObject(customers,settings);
         }
 
+        public static string GetSalesWithAppliedDiscount(CarDealerContext context)
+        {
+            var carsAndPricing = 
+                context
+                .Sales
+                .Select(c => new
+                {
+                    car = new
+                    {
+                        Make = c.Car.Make,
+                        Model = c.Car.Model,
+                        TravelledDistance = c.Car.TravelledDistance
+                    },
+                    customerName = c.Customer.Name,
+                    Discount = c.Discount.ToString("F2"),
+                    price = c.Car.PartCars.Sum(x => x.Part.Price).ToString("F2"),
+                    priceWithDiscount = (c.Car.PartCars.Sum(x => x.Part.Price) * ((100.00M -c.Discount) / 100)).ToString("F2")
+                })
+                .Take(10)
+                .ToArray();
+
+            var settings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+            };
+
+            return JsonConvert.SerializeObject(carsAndPricing,settings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
@@ -295,12 +324,14 @@ namespace CarDealer
 
                         Console.WriteLine(GetCarsWithTheirListOfParts(db));
 
+                        //10. Export Total Sales By Customer
+
+                        Console.WriteLine(GetTotalSalesByCustomer(db));
             */
 
-            //10. Export Total Sales By Customer
+            //11. Export Sales With Applied Discount
 
-            Console.WriteLine(GetTotalSalesByCustomer(db));
-
+            Console.WriteLine(GetSalesWithAppliedDiscount(db));
         }
     }
 }
