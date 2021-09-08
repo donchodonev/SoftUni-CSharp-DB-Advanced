@@ -162,6 +162,28 @@ namespace CarDealer
 
             return JsonConvert.SerializeObject(toyotas, settings);
         }
+
+        public static string GetLocalSuppliers(CarDealerContext context)
+        {
+            var suppliers = context.
+                Suppliers
+                .Where(s => s.IsImporter == false)
+                .Select(supp => new
+                {
+                    supp.Id,
+                    supp.Name,
+                    PartsCount = supp.Parts.Count
+                })
+                .ToArray();
+
+            var settings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(suppliers, settings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
@@ -203,11 +225,16 @@ namespace CarDealer
                         //6. Export Ordered Customers
 
                         Console.WriteLine(GetOrderedCustomers(db));
+
+                        //7. Export Cars from Make Toyota
+
+                        Console.WriteLine(GetCarsFromMakeToyota(db));
+
             */
 
-            //7. Export Cars from Make Toyota
+            //8. Export Local Suppliers
 
-            Console.WriteLine(GetCarsFromMakeToyota(db));
+            Console.WriteLine(GetLocalSuppliers(db));
         }
     }
 }
