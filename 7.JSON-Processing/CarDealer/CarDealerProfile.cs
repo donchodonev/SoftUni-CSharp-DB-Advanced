@@ -22,6 +22,9 @@ namespace CarDealer
 
             CreateMap<CarInput,Car>()
                 .ReverseMap();
+
+            CreateMap<CustomerInputDTO,Customer>()
+                .ReverseMap();
         }
     }
 }
