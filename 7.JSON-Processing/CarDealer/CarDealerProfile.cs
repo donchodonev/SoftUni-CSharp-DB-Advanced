@@ -19,6 +19,9 @@ namespace CarDealer
 
             CreateMap<Part, PartInput>()
             .ForMember(x => x.SupplierId, y => y.MapFrom(z => z.SupplierId));
+
+            CreateMap<CarInput,Car>()
+                .ReverseMap();
         }
     }
 }
