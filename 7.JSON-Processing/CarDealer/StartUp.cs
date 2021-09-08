@@ -8,6 +8,7 @@ using CarDealer.DTO;
 using CarDealer.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace CarDealer
 {
@@ -91,7 +92,7 @@ namespace CarDealer
 
             var customerDtoData = JsonConvert.DeserializeObject<CustomerInputDTO[]>(inputJson);
 
-            Customer [] customers = mapper.Map<Customer[]>(customerDtoData);
+            Customer[] customers = mapper.Map<Customer[]>(customerDtoData);
 
             context.Customers.AddRange(customers);
 
@@ -115,11 +116,34 @@ namespace CarDealer
             return $"Successfully imported {countOfSalesImported}.";
         }
 
+        public static string GetOrderedCustomers(CarDealerContext context)
+        {
+            var customersOrdered = context
+                .Customers
+                .OrderBy(x => x.BirthDate)
+                .ThenBy(x => x.IsYoungDriver)
+                .Select(cust => new
+                {
+                    cust.Name,
+                    BirthDate = cust.BirthDate.ToString("dd/MM/yyyy"),
+                    cust.IsYoungDriver
+                })
+
+                .ToList();
+
+            var settings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(customersOrdered,settings);
+        }
+
         public static void Main(string[] args)
         {
             var db = new CarDealerContext();
-/*
-            db.Database.EnsureDeleted();
+
+/*          db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
 
             //1. Import Suppliers
@@ -146,11 +170,16 @@ namespace CarDealer
 
             Console.WriteLine(ImportCustomers(db, customersJsonData));
 
-            //5. Import Sales*/
+            //5. Import Sales
 
             string salesJsonData = File.ReadAllText(@".\..\..\..\Datasets\sales.json");
 
             Console.WriteLine(ImportSales(db,salesJsonData));
+*/
+
+            //6. Export Ordered Customers
+
+            Console.WriteLine(GetOrderedCustomers(db));
         }
     }
 }
