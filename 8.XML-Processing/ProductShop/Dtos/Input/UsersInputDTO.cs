@@ -4,7 +4,8 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace ProductShop.Dtos
+namespace ProductShop.Dtos.Input
+
 {
     [XmlRoot]
     [XmlType("User")]
