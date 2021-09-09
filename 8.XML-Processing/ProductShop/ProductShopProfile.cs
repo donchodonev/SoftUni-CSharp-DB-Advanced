@@ -9,6 +9,8 @@ namespace ProductShop
         public ProductShopProfile()
         {
             CreateMap<UsersInputDTO,User>().ReverseMap();
+
+            CreateMap<ProductsInputDTO,Product>().ReverseMap();
         }
     }
 }
