@@ -209,15 +209,54 @@ namespace ProductShop
 
             return writer.ToString();
         }
+
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            var users = new UsersWithCountDTO
+            {
+                Users = context.Users.Where(x => x.ProductsSold.Count > 0)
+                .OrderByDescending(x => x.ProductsSold.Count)
+                .Select(x => new UserOutputDTOWithAge
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Age = x.Age,
+                    SoldProducts = new ProductWithCountDTO
+                    {
+                        Count = x.ProductsSold.Count,
+                        Products = x.ProductsSold.Select(y => new ProductOutputWithoutBuyerDTO
+                        {
+                            Price = y.Price,
+                            Name = y.Name
+                        })
+                        .Take(10)
+                        .ToList()
+                    }
+                }).ToArray(),
+
+                Count = context.Users.Where(x => x.ProductsSold.Count > 0).Count()
+            };
+
+            var serialzier = new XmlSerializer(typeof(UsersWithCountDTO), new XmlRootAttribute("Users"));
+
+            var writer = new StringWriter();
+
+            using (writer)
+            {
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "");
+
+                serialzier.Serialize(writer, users, ns);
+            }
+
+            return writer.ToString();
+        }
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
 
-            /*   
-                
             db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
-
 
             //1. Import Users
 
@@ -251,11 +290,15 @@ namespace ProductShop
 
             Console.WriteLine(GetSoldProducts(db));
 
-            */
 
             //7.Categories by Products Count
 
             Console.WriteLine(GetCategoriesByProductsCount(db));
+
+
+            //8. Users and Products
+
+            Console.WriteLine(GetUsersWithProducts(db));
         }
     }
 }
