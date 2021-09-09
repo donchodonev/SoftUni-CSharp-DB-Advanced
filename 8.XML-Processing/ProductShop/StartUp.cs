@@ -178,6 +178,37 @@ namespace ProductShop
 
             return writer.ToString();
         }
+
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories =
+                context
+                .Categories
+                .Select(x => new CategoryOutputDTO
+                {
+                    Name = x.Name,
+                    Count = x.CategoryProducts.Count,
+                    AveragePrice = x.CategoryProducts.Average(y => y.Product.Price),
+                    TotalRevenue = x.CategoryProducts.Sum(y => y.Product.Price)
+                })
+                .OrderByDescending(x => x.Count)
+                .ThenBy(x => x.TotalRevenue)
+                .ToArray();
+
+            var serialzier = new XmlSerializer(typeof(CategoryOutputDTO[]), new XmlRootAttribute("Categories"));
+
+            var writer = new StringWriter();
+
+            using (writer)
+            {
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "");
+
+                serialzier.Serialize(writer, categories, ns);
+            }
+
+            return writer.ToString();
+        }
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
@@ -216,11 +247,15 @@ namespace ProductShop
 
             Console.WriteLine(GetProductsInRange(db));
 
-            */
-
-            //6. Sold Products
+            //6.Sold Products
 
             Console.WriteLine(GetSoldProducts(db));
+
+            */
+
+            //7.Categories by Products Count
+
+            Console.WriteLine(GetCategoriesByProductsCount(db));
         }
     }
 }
