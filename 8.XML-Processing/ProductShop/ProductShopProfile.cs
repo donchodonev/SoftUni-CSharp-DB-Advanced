@@ -13,6 +13,8 @@ namespace ProductShop
             CreateMap<ProductsInputDTO,Product>().ReverseMap();
 
             CreateMap<CategoriesInputDTO, Category>().ReverseMap();
+
+            CreateMap<CategoriesProductsInputDTO,CategoryProduct>().ReverseMap();
         }
     }
 }

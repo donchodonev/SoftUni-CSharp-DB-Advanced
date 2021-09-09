@@ -72,6 +72,8 @@ namespace ProductShop
 
             CategoriesInputDTO[] categoryDTOs = (CategoriesInputDTO[])serializer.Deserialize(reader);
 
+            reader.Close();
+
             Category[] categories = mapper.Map<Category[]>(categoryDTOs);
 
             context.Categories.AddRange(categories);
@@ -81,33 +83,66 @@ namespace ProductShop
             return $"Successfully imported {countOfCategoriesImported}";
         }
 
+        public static string ImportCategoryProducts(ProductShopContext context, string inputXml)
+        {
+            Initialize();
+
+            var reader = new StringReader(inputXml);
+
+            var serialzier = new XmlSerializer(typeof(CategoriesProductsInputDTO[]), new XmlRootAttribute("CategoryProducts"));
+
+            CategoriesProductsInputDTO[] categoryProductsDTOs;
+
+            using (reader)
+            {
+                categoryProductsDTOs = (CategoriesProductsInputDTO[])serialzier.Deserialize(reader);
+            }
+
+            CategoryProduct[] categoryProducts = mapper.Map<CategoryProduct[]>(categoryProductsDTOs);
+
+            context.CategoryProducts.AddRange(categoryProducts);
+
+            int countOfCategoryProductsImpored = context.SaveChanges();
+
+            return $"Successfully imported {countOfCategoryProductsImpored}";
+        }
+
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
 
-            /*            db.Database.EnsureDeleted();
-                        db.Database.EnsureCreated();
+            /*   
+                
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
 
 
-                        //1. Import Users
+            //1. Import Users
 
-                        var xmlUsersData = File.ReadAllText(@".\..\..\..\Datasets\users.xml");
+            var xmlUsersData = File.ReadAllText(@".\..\..\..\Datasets\users.xml");
 
-                        Console.WriteLine(ImportUsers(db, xmlUsersData));
+            Console.WriteLine(ImportUsers(db, xmlUsersData));
 
-                        //2. Import Products
+            //2. Import Products
 
-                        var xmlProductsData = File.ReadAllText(@".\..\..\..\Datasets\products.xml");
+            var xmlProductsData = File.ReadAllText(@".\..\..\..\Datasets\products.xml");
 
-                        Console.WriteLine(ImportProducts(db,xmlProductsData));
+            Console.WriteLine(ImportProducts(db,xmlProductsData));
 
-                        */
 
             //3.Import Categories
 
             var xmlCategoriesData = File.ReadAllText(@".\..\..\..\Datasets\categories.xml");
 
             Console.WriteLine(ImportCategories(db, xmlCategoriesData));
+
+            */
+
+            //4.Import Categories and Products
+
+            var xmlCategoriesAndProdcutsData = File.ReadAllText(@".\..\..\..\Datasets\categories-products.xml");
+
+            Console.WriteLine(ImportCategoryProducts(db, xmlCategoriesAndProdcutsData));
         }
     }
 }
