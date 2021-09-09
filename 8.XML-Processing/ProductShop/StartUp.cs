@@ -133,9 +133,47 @@ namespace ProductShop
             using (writer)
             {
                 var ns = new XmlSerializerNamespaces();
-                ns.Add("","");
+                ns.Add("", "");
 
-                serialzier.Serialize(writer, products,ns);
+                serialzier.Serialize(writer, products, ns);
+            }
+
+            return writer.ToString();
+        }
+
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            Initialize();
+
+            var users = context
+                .Users
+                .Where(x => x.ProductsSold.Count > 0)
+                .Select(x => new UserOutputDTO
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    SoldProducts = x.ProductsSold.Select(y => new ProductOutputWithoutBuyerDTO
+                    {
+                        Name = y.Name,
+                        Price = y.Price
+                    })
+                    .ToArray()
+                })
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .Take(5)
+                .ToArray();
+
+            var serialzier = new XmlSerializer(typeof(UserOutputDTO[]), new XmlRootAttribute("Users"));
+
+            var writer = new StringWriter();
+
+            using (writer)
+            {
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "");
+
+                serialzier.Serialize(writer, users, ns);
             }
 
             return writer.ToString();
@@ -174,11 +212,15 @@ namespace ProductShop
 
             Console.WriteLine(ImportCategoryProducts(db, xmlCategoriesAndProdcutsData));
 
-            */
-
             //5.Products In Range
 
             Console.WriteLine(GetProductsInRange(db));
+
+            */
+
+            //6. Sold Products
+
+            Console.WriteLine(GetSoldProducts(db));
         }
     }
 }
