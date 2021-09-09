@@ -2,11 +2,14 @@
 using AutoMapper;
 using ProductShop.Data;
 using System.Xml.Linq;
-using ProductShop.Dtos;
+using ProductShop.Dtos.Input;
 using System.Xml.Serialization;
 using System.IO;
 using ProductShop.Models;
 using System.Linq;
+using System.Xml;
+using ProductShop.Dtos.Output;
+using System.Text;
 
 namespace ProductShop
 {
@@ -106,7 +109,37 @@ namespace ProductShop
 
             return $"Successfully imported {countOfCategoryProductsImpored}";
         }
+        public static string GetProductsInRange(ProductShopContext context)
+        {
+            Initialize();
 
+            var products = context
+                .Products
+                .Where(x => x.Price >= 500 && x.Price <= 1000)
+                .Select(x => new ProductOutputDTO
+                {
+                    Name = x.Name,
+                    Price = x.Price,
+                    Buyer = x.Buyer.FirstName + " " + x.Buyer.LastName
+                })
+                .OrderBy(x => x.Price)
+                .Take(10)
+                .ToArray();
+
+            var serialzier = new XmlSerializer(typeof(ProductOutputDTO[]), new XmlRootAttribute("Products"));
+
+            var writer = new StringWriter();
+
+            using (writer)
+            {
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("","");
+
+                serialzier.Serialize(writer, products,ns);
+            }
+
+            return writer.ToString();
+        }
         public static void Main(string[] args)
         {
             var db = new ProductShopContext();
@@ -129,20 +162,23 @@ namespace ProductShop
 
             Console.WriteLine(ImportProducts(db,xmlProductsData));
 
-
             //3.Import Categories
 
             var xmlCategoriesData = File.ReadAllText(@".\..\..\..\Datasets\categories.xml");
 
             Console.WriteLine(ImportCategories(db, xmlCategoriesData));
 
-            */
-
             //4.Import Categories and Products
 
             var xmlCategoriesAndProdcutsData = File.ReadAllText(@".\..\..\..\Datasets\categories-products.xml");
 
             Console.WriteLine(ImportCategoryProducts(db, xmlCategoriesAndProdcutsData));
+
+            */
+
+            //5.Products In Range
+
+            Console.WriteLine(GetProductsInRange(db));
         }
     }
 }

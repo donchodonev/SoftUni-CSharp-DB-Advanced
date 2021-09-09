@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using ProductShop.Dtos;
+using ProductShop.Dtos.Input;
+using ProductShop.Dtos.Output;
 using ProductShop.Models;
 
 namespace ProductShop
@@ -15,6 +16,8 @@ namespace ProductShop
             CreateMap<CategoriesInputDTO, Category>().ReverseMap();
 
             CreateMap<CategoriesProductsInputDTO,CategoryProduct>().ReverseMap();
+
+            CreateMap<Product,ProductOutputDTO>().ReverseMap();
         }
     }
 }
